@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>픽셀 고정 레이아웃 - 헤더 + 로그인 텍스트</title>
+    <style>
+        /* 0) 기본 리셋 (필요 최소한) */
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            background: #eaeaea;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+        }
+
+        /* 1) 아트보드(프레임) - 1920x1080 고정 */
+        .frame {
+            position: relative;
+            width: 1920px;
+            height: 1080px;
+            margin: 0 auto;
+            /* 화면 가운데 배치용 */
+            background: #ffffff;
+            /* 작업 배경 */
+            overflow: hidden;
+            /* 필요 시 클리핑 */
+            outline: 1px solid rgba(0, 0, 0, 0.05);
+            /* 가이드용(원치 않으면 제거) */
+        }
+
+        /* 2) 상단 헤더 - 1920x104, BG #F4F5F7, 아래 테두리 #000 1px */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1920px;
+            height: 104px;
+            background: #F4F5F7;
+            border-bottom: 1px solid #000000;
+        }
+
+        /* 2-1) 헤더 중앙 제목 - 206x32, 정확 좌표 배치(가운데 정렬) */
+        .header-title {
+            position: absolute;
+            /* 헤더(1920x104)에서 타이틀(206x32)을 정확 중앙에 */
+            top: 36px;
+            /* (104 - 32) / 2 */
+            left: 857px;
+            /* (1920 - 206) / 2 */
+            width: 206px;
+            height: 32px;
+            /* 타이포그래피 */
+            font-family: 'Sandoll GogoRound', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+            font-weight: 400;
+            /* 03 Rg → 웹에서는 regular(400)로 매핑 */
+            font-style: normal;
+            /* Figma의 "03 Rg"는 스타일명이므로 normal 처리 */
+            font-size: 32px;
+            line-height: 100%;
+            /* 1.0 */
+            letter-spacing: 0;
+            text-align: center;
+            color: #000000;
+            display: flex;
+            /* 박스 안에서 수직/수평 중앙 정렬 */
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            /* 한 줄 유지 */
+        }
+
+        /* 3) 텍스트 박스 (로그인) - 83x38, top:368, left:918 */
+        .login-text {
+            position: absolute;
+            top: 368px;
+            left: 918px;
+            width: 83px;
+            height: 38px;
+            /* 타이포그래피 */
+            font-family: 'Pretendard', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+            font-weight: 700;
+            /* Bold */
+            font-style: normal;
+            font-size: 32px;
+            line-height: 100%;
+            letter-spacing: 0;
+            text-align: center;
+            color: #000000;
+            display: flex;
+            /* 83x38 박스 중앙에 텍스트 정렬 */
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            /* 시각 검수용 배경(필요 시 제거) */
+            /* background: rgba(0,0,0,0.04); */
+        }
+
+        /* --- 참고: 웹폰트 연결이 필요하면 아래 주석 해제 후 URL 교체 --- @font-face { font-family: 'Sandoll GogoRound'; src: url('SandollGogoRound.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; } @font-face { font-family: 'Pretendard'; src: url('Pretendard-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; } */
+        /* 4) 폼 요소 공통 스타일 */
+        .label {
+            position: absolute;
+            font-family: 'Pretendard', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+            font-weight: 700;
+            /* Bold */
+            font-style: normal;
+            font-size: 15px;
+            line-height: 100%;
+            letter-spacing: 0;
+            color: #000000;
+        }
+
+        .input {
+            position: absolute;
+            width: 355px;
+            height: 33px;
+            border: 1px solid #000000;
+            border-radius: 4px;
+            padding: 6px 10px;
+            /* 시각 안정용 (원치 않으면 제거 가능) */
+            font-family: 'Pretendard', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            color: #000000;
+            background: #FFFFFF;
+        }
+
+        .input::placeholder {
+            color: #6b6b6b;
+        }
+
+        .helper {
+            position: absolute;
+            width: 71px;
+            height: 15px;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+            font-weight: 400;
+            /* Regular */
+            font-style: normal;
+            font-size: 12px;
+            line-height: 100%;
+            letter-spacing: 0;
+            color: #FF0000;
+            /* error color */
+        }
+
+        /* 이메일 섹션 좌표 */
+        .email-label {
+            top: 473px;
+            left: 782px;
+            width: 39px;
+            height: 18px;
+        }
+
+        .email-input {
+            top: 499px;
+            left: 782px;
+        }
+
+        .email-helper {
+            top: 536px;
+            left: 782px;
+        }
+
+        /* 비밀번호 섹션 좌표 (이메일 섹션 아래 배치) */
+        .password-label {
+            top: 565px;
+            left: 782px;
+        }
+
+        .password-input {
+            top: 591px;
+            left: 782px;
+        }
+
+        .password-helper {
+            top: 628px;
+            left: 782px;
+        }
+
+        /* 로그인 버튼 */
+        .login-button {
+            position: absolute;
+            top: 649px;
+            left: 782px;
+            width: 355px;
+            height: 33px;
+            background: #ACA0EB;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Pretendard', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffffff;
+            /* 필요 시 #fff 로 변경 가능 */
+            cursor: pointer;
+        }
+
+        /* 회원가입 버튼(텍스트) */
+        .signup-button {
+            position: absolute;
+            top: 694px;
+            left: 935px;
+            width: 49px;
+            height: 17px;
+            font-family: 'Pretendard', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+            font-weight: 400;
+            font-style: normal;
+            font-size: 14px;
+            line-height: 100%;
+            letter-spacing: 0;
+            color: #000000;
+            background: transparent;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="frame"> <!-- 상단 헤더 -->
+        <header class="header">
+            <div class="header-title">아무말 대찬치</div>
+        </header> <!-- 텍스트 박스(로그인) -->
+        <div class="login-text">로그인</div> <!-- 1) 이메일 레이블 -->
+        <div class="label email-label">이메일</div> <!-- 2) 이메일 입력 박스 --> <input class="input email-input" type="email"
+            placeholder="이메일을 입력하세요" /> <!-- 3) 이메일 helper text -->
+        <div class="helper email-helper">helper text</div> <!-- 비밀번호 섹션 (이메일과 동일 스펙으로 아래 배치) -->
+        <div class="label password-label">비밀번호</div> <input class="input password-input" type="password"
+            placeholder="비밀번호를 입력하세요" />
+        <div class="helper password-helper">helper text</div> <!-- 4) 로그인 버튼 --> <button class="login-button"
+            type="button">로그인</button> <!-- 5) 회원가입 버튼 (텍스트) --> <button class="signup-button"
+            type="button">회원가입</button>
+    </div>
+</body>
+
+</html>

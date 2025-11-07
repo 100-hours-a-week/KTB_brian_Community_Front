@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>회원가입 - 컴포넌트 기반</title>
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+
+<body>
+  <div class="app">
+    <!-- 헤더 -->
+    <header class="header" role="banner">
+      <div class="header__inner">
+        <button class="icon-btn" type="button" aria-label="뒤로가기">
+          <svg viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M10 1 L2 9 L10 17" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <h1 class="header__title">아무 말 대잔치</h1>
+      </div>
+    </header>
+
+    <!-- 본문 -->
+    <main class="container" role="main">
+      <h2 class="page-title">회원가입</h2>
+
+      <form class="form" action="#" method="post" novalidate>
+        <!-- 프로필 -->
+        <section class="profile" aria-label="프로필 사진">
+          <label class="profile__label" for="profile">프로필 사진</label>
+          <p class="profile__helper" id="profile-help">* 프로필 사진을 추가해주세요.</p>
+          <div class="profile__upload" data-required="true" aria-describedby="profile-help">
+            <img class="profile__preview" alt="프로필 미리보기" />
+            <input id="profile" name="profile" type="file" accept="image/*" />
+            <svg class="profile__plus" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true">
+              <rect x="11.5" y="4" width="1" height="16" fill="#000" />
+              <rect x="4" y="11.5" width="16" height="1" fill="#000" />
+            </svg>
+          </div>
+        </section>
+
+        <!-- 이메일 -->
+        <div class="field" id="field-email">
+          <label class="field__label" for="email">이메일*</label>
+          <input class="field__input" id="email" name="email" type="email" placeholder="이메일을 입력하세요" data-required="true"
+            data-rule="email" aria-describedby="email-help" />
+          <p class="field__helper" id="email-help"></p>
+        </div>
+
+        <!-- 비밀번호 -->
+        <div class="field" id="field-password">
+          <label class="field__label" for="password">비밀번호*</label>
+          <input class="field__input" id="password" name="password" type="password" placeholder="비밀번호를 입력하세요"
+            data-required="true" data-rule="password" aria-describedby="password-help" />
+          <p class="field__helper" id="password-help"></p>
+        </div>
+
+        <!-- 비밀번호 확인 -->
+        <div class="field" id="field-password2">
+          <label class="field__label" for="password2">비밀번호 확인*</label>
+          <input class="field__input" id="password2" name="password2" type="password" placeholder="비밀번호를 한 번 더 입력하세요"
+            data-required="true" data-rule="password2" aria-describedby="password2-help" />
+          <p class="field__helper" id="password2-help"></p>
+        </div>
+
+        <!-- 닉네임 -->
+        <div class="field" id="field-nickname">
+          <label class="field__label" for="nickname">닉네임*</label>
+          <input class="field__input" id="nickname" name="nickname" type="text" placeholder="닉네임을 입력하세요"
+            data-required="true" data-rule="nickname" aria-describedby="nickname-help" />
+          <p class="field__helper" id="nickname-help"></p>
+        </div>
+
+        <!-- 버튼 -->
+        <div class="actions">
+          <button class="btn btn--primary btn--block" id="signup-btn" type="submit" disabled>회원가입</button>
+          <a class="btn btn--outline btn--block" href="../login/index.html">로그인하러 가기</a>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

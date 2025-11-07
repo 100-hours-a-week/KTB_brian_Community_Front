@@ -1,0 +1,201 @@
+/* ===================== 0) Design Tokens ===================== */
+:root {
+    --bg-page: #F4F5F7;
+    --bg-surface: #FFFFFF;
+    --text: #000;
+    --muted: #6b6b6b;
+    --primary: #ACA0EB;
+    --line: #000;
+    --r-sm: 4px;
+    --r-lg: 16px;
+    --s-1: 4px;
+    --s-2: 8px;
+    --s-3: 12px;
+    --s-4: 16px;
+    --s-5: 20px;
+    --s-6: 24px;
+    --s-7: 28px;
+    --s-8: 32px;
+    --s-10: 40px;
+    --font-body: 'Pretendard', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+    --font-display: 'Sandoll GogoRound', var(--font-body);
+    --fs-12: 12px;
+    --fs-14: 14px;
+    --fs-15: 15px;
+    --fs-16: 16px;
+    --fs-24: 24px;
+    --fs-32: 32px;
+    --lh-100: 100%;
+    --lh-130: 130%;
+    --container-max: 920px;
+    --container-pt: var(--s-6);
+    --header-h: 104px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    background: #eaeaea;
+    color: var(--text);
+    font-family: var(--font-body);
+}
+
+/* ===================== 1) Page Shell ===================== */
+.app {
+    min-height: 100%;
+    background: var(--bg-surface);
+}
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    height: var(--header-h);
+    background: var(--bg-page);
+    border-bottom: 1px solid var(--line);
+}
+
+.header__inner {
+    max-width: var(--container-max);
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.header__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-32);
+    line-height: var(--lh-100);
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.container {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: var(--s-6) var(--s-6) var(--s-8);
+}
+
+/* ===================== 2) Components ===================== */
+.page-title {
+    margin-top: calc(368px - var(--header-h) - var(--container-pt));
+    /* = 240px */
+    margin-bottom: 32px;
+    text-align: center;
+    font-weight: 700;
+    font-size: var(--fs-32);
+    line-height: var(--lh-100);
+}
+
+.form {
+    max-width: 355px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+}
+
+.field__label {
+    font-weight: 700;
+    font-size: var(--fs-15);
+    line-height: var(--lh-100);
+    margin-bottom: var(--s-2);
+}
+
+.field__input {
+    height: 33px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    padding: 6px 10px;
+    font-size: var(--fs-14);
+    margin-bottom: var(--s-1);
+}
+
+.field__input::placeholder {
+    color: var(--muted);
+}
+
+.field__helper {
+    font-family: 'Inter', var(--font-body);
+    font-size: var(--fs-12);
+    color: #FF0000;
+    line-height: var(--lh-100);
+    min-height: 15px;
+    margin: 0;
+    visibility: hidden;
+}
+
+/* 에러/경고/정보 상태 */
+.field.field--error .field__helper,
+.field.field--warn .field__helper,
+.field.field--info .field__helper {
+    visibility: visible;
+}
+
+.field.field--error .field__input {
+    border-color: #FF0000;
+    outline: none;
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    margin-top: var(--s-1);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    height: 33px;
+    border-radius: var(--r-sm);
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: var(--fs-14);
+}
+
+.btn--primary {
+    background: var(--primary);
+    color: #fff;
+}
+
+.btn--primary:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.link-row {
+    display: flex;
+    justify-content: center;
+}
+
+.link {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-weight: 400;
+    text-decoration: none;
+    font-size: var(--fs-14);
+    color: var(--text);
+}

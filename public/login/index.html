@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>로그인 - 컴포넌트 기반 (ESM)</title>
+  <link rel="stylesheet" href="../../new_styles.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- 헤더 (공통) -->
+    <header class="header" role="banner">
+      <div class="header__inner">
+        <h1 class="header__title">아무말 대찬치</h1>
+      </div>
+    </header>
+
+    <!-- 본문 -->
+    <main class="container" role="main">
+      <h2 class="page-title">로그인</h2>
+
+      <form class="form" action="#" method="post" novalidate>
+        <div class="field" id="field-email">
+          <label class="field__label" for="email">이메일</label>
+          <input class="field__input" id="email" name="email" type="email"
+                 placeholder="이메일을 입력하세요" aria-describedby="email-help" />
+          <p class="field__helper" id="email-help"></p>
+        </div>
+
+        <div class="field" id="field-password">
+          <label class="field__label" for="password">비밀번호</label>
+          <input class="field__input" id="password" name="password" type="password"
+                 placeholder="비밀번호를 입력하세요" aria-describedby="password-help" />
+          <p class="field__helper" id="password-help"></p>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn--primary" id="login-btn" type="submit" disabled>로그인</button>
+          <div class="link-row">
+            <a class="link" href="../signin/index.html">회원가입</a>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <!-- ✅ ESM entry -->
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

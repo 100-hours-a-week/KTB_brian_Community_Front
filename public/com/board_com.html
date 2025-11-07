@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UI 컴포넌트 베이스 + 게시글 목록 리팩터링</title>
+  <style>
+    /* =====================
+       0) Design Tokens
+       ===================== */
+    :root {
+      /* colors */
+      --bg-page: #F4F5F7;
+      --bg-surface: #FFFFFF;
+      --text: #000000;
+      --muted: #6b6b6b;
+      --primary: #ACA0EB;
+      --line: #000000;
+      --divider: #E5E5E5;
+
+      /* radius */
+      --r-sm: 4px;
+      --r-md: 8px;
+      --r-lg: 16px;
+
+      /* spacing (4px grid) */
+      --s-1: 4px;
+      --s-2: 8px;
+      --s-3: 12px;
+      --s-4: 16px;
+      --s-5: 20px;
+      --s-6: 24px;
+      --s-7: 28px;
+      --s-8: 32px;
+
+      /* typography */
+      --font-body: 'Pretendard', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+      --font-display: 'Sandoll GogoRound', var(--font-body);
+      --fs-12: 12px;
+      --fs-14: 14px;
+      --fs-16: 16px;
+      --fs-24: 24px;
+      --fs-32: 32px;
+      --lh-100: 100%;
+      --lh-130: 130%;
+
+      /* layout */
+      --container-max: 920px;
+      /* 페이지 컨테이너 최대폭 */
+      --header-h: 104px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: #eaeaea;
+      color: var(--text);
+      font-family: var(--font-body);
+    }
+
+    /* =====================
+       1) Page Shell
+       ===================== */
+    .app {
+      min-height: 100%;
+      background: var(--bg-surface);
+    }
+
+    /* Header (공통) */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      height: var(--header-h);
+      background: var(--bg-page);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .header__inner {
+      max-width: var(--container-max);
+      height: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .header__title {
+      font-family: var(--font-display);
+      font-size: var(--fs-32);
+      line-height: var(--lh-100);
+      font-weight: 400;
+    }
+
+    .header__right {
+      position: absolute;
+      right: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--s-3);
+    }
+
+    .icon-btn {
+      display: inline-grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--r-md);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    .icon-btn svg {
+      display: block;
+    }
+
+    /* Avatar */
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #C4C4C4;
+      overflow: hidden;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Container */
+    .container {
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding: var(--s-6) var(--s-6) var(--s-8);
+    }
+
+    /* Typography helpers */
+    .t-center {
+      text-align: center;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    /* Button */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--s-2);
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: var(--fs-16);
+      line-height: 157%;
+      border-radius: var(--r-lg);
+      border: 1px solid transparent;
+      background: var(--primary);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .btn--outline {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    .btn--block {
+      width: 100%;
+    }
+
+    /* Field (Label + Input + Helper) */
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: var(--s-2);
+    }
+
+    .field__label {
+      font-weight: 700;
+      font-size: 15px;
+      line-height: var(--lh-100);
+    }
+
+    .field__input {
+      height: 33px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-sm);
+      padding: 6px 10px;
+      font-size: 14px;
+    }
+
+    .field__helper {
+      font-family: 'Inter', var(--font-body);
+      font-size: 12px;
+      color: #FF0000;
+      line-height: var(--lh-100);
+    }
+
+    /* Card: Post */
+    .post-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .post-card {
+      background: var(--bg-surface);
+      border-radius: var(--r-lg);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06) inset;
+    }
+
+    .post-card__inner {
+      padding: 24px;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      row-gap: var(--s-3);
+    }
+
+    .post-card__head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .post-card__title {
+      font-weight: 700;
+      font-size: var(--fs-24);
+      line-height: var(--lh-130);
+    }
+
+    .post-card__time {
+      font-size: var(--fs-14);
+      line-height: var(--lh-130);
+      text-align: right;
+    }
+
+    .post-card__stats {
+      display: flex;
+      gap: 10px;
+      font-size: var(--fs-14);
+    }
+
+    .post-card__divider {
+      height: 1px;
+      background: var(--divider);
+      margin-top: 8px;
+    }
+
+    .post-card__author {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 24px 8px;
+    }
+
+    .post-card__name {
+      font-weight: 700;
+      font-size: var(--fs-16);
+    }
+
+    /* Hero(인사글 + CTA) */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: var(--s-4);
+      margin-top: 40px;
+    }
+
+    .hero__greet {
+      grid-column: 1 / -1;
+      text-align: center;
+      font-size: var(--fs-24);
+      line-height: var(--lh-130);
+    }
+
+    .hero__greet b {
+      font-weight: 700;
+    }
+
+    .hero__cta {
+      justify-self: end;
+    }
+
+    /* Utility spacing */
+    .mt-6 {
+      margin-top: var(--s-6);
+    }
+
+    .mt-8 {
+      margin-top: var(--s-8);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- ===================== Header ===================== -->
+    <header class="header" role="banner">
+      <div class="header__inner">
+        <h1 class="header__title">아무 말 대잔치</h1>
+        <div class="header__right">
+          <div class="avatar" aria-hidden="true"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===================== Page: 게시글 목록 ===================== -->
+    <main class="container" role="main">
+      <section class="hero">
+        <p class="hero__greet">안녕하세요,<br />아무 말 대잔치 <b>게시판</b> 입니다.</p>
+        <button class="btn hero__cta" type="button">게시글 작성</button>
+      </section>
+
+      <section class="post-list mt-8" aria-label="게시글 목록">
+        <!-- PostCard -->
+        <article class="post-card">
+          <div class="post-card__inner">
+            <div class="post-card__head">
+              <h2 class="post-card__title">제목 1</h2>
+              <time class="post-card__time" datetime="2021-01-01T00:00:00">2021-01-01 00:00:00</time>
+            </div>
+            <div class="post-card__stats">
+              <span>좋아요 0</span>
+              <span>댓글 0</span>
+              <span>조회수 0</span>
+            </div>
+            <div class="post-card__divider"></div>
+            <div class="post-card__author">
+              <div class="avatar" aria-hidden="true"></div>
+              <span class="post-card__name">더미 작성자 1</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="post-card">
+          <div class="post-card__inner">
+            <div class="post-card__head">
+              <h2 class="post-card__title">제목 2</h2>
+              <time class="post-card__time" datetime="2021-01-02T12:34:56">2021-01-02 12:34:56</time>
+            </div>
+            <div class="post-card__stats">
+              <span>좋아요 3</span>
+              <span>댓글 1</span>
+              <span>조회수 12</span>
+            </div>
+            <div class="post-card__divider"></div>
+            <div class="post-card__author">
+              <div class="avatar" aria-hidden="true"></div>
+              <span class="post-card__name">더미 작성자 2</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="post-card">
+          <div class="post-card__inner">
+            <div class="post-card__head">
+              <h2 class="post-card__title">제목 3</h2>
+              <time class="post-card__time" datetime="2021-01-03T08:00:00">2021-01-03 08:00:00</time>
+            </div>
+            <div class="post-card__stats">
+              <span>좋아요 10</span>
+              <span>댓글 2</span>
+              <span>조회수 99</span>
+            </div>
+            <div class="post-card__divider"></div>
+            <div class="post-card__author">
+              <div class="avatar" aria-hidden="true"></div>
+              <span class="post-card__name">더미 작성자 3</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- 인피니트 스크롤 준비물 -->
+      <template id="post-card-template">
+        <article class="post-card">
+          <div class="post-card__inner">
+            <div class="post-card__head">
+              <h2 class="post-card__title"></h2>
+              <time class="post-card__time"></time>
+            </div>
+            <div class="post-card__stats">
+              <span class="likes"></span>
+              <span class="comments"></span>
+              <span class="views"></span>
+            </div>
+            <div class="post-card__divider"></div>
+            <div class="post-card__author">
+              <div class="avatar" aria-hidden="true"></div>
+              <span class="post-card__name"></span>
+            </div>
+          </div>
+        </article>
+      </template>
+      <div id="infinite-sentinel" aria-hidden="true"></div>
+    </main>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>회원가입</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- 상단 바 -->
+  <header class="topbar">
+    <button class="back-btn" aria-label="뒤로 가기">‹</button>
+    <h1 class="title">아무 말 대잔치</h1>
+    <span class="topbar-spacer" aria-hidden="true"></span>
+  </header>
+
+  <main class="container">
+    <h2 class="page-title">회원가입</h2>
+
+    <!-- 프로필 사진 업로드 -->
+    <section class="card">
+      <div class="section-title">프로필 사진</div>
+      <small class="helper">* helper text</small>
+
+      <label class="avatar-uploader">
+        <input id="profile" name="profile" type="file" accept="image/*" hidden />
+        <span class="plus" aria-hidden="true">+</span>
+        <img id="preview" alt="선택한 프로필 미리보기" hidden />
+      </label>
+    </section>
+
+    <!-- 입력 폼 -->
+    <section class="card">
+      <form id="signup-form" class="form" novalidate>
+        <div class="field">
+          <label for="email">이메일 <span class="req">*</span></label>
+          <input id="email" name="email" type="email" placeholder="이메일을 입력하세요" required />
+          <small class="helper">* helper text</small>
+        </div>
+
+        <div class="field">
+          <label for="password">비밀번호 <span class="req">*</span></label>
+          <input id="password" name="password" type="password" placeholder="비밀번호를 입력하세요" minlength="8" maxlength="20" required />
+          <small class="helper">* helper text</small>
+        </div>
+
+        <div class="field">
+          <label for="confirm">비밀번호 확인 <span class="req">*</span></label>
+          <input id="confirm" name="confirm" type="password" placeholder="비밀번호를 한 번 더 입력하세요" required />
+          <small class="helper">* helper text</small>
+        </div>
+
+        <div class="field">
+          <label for="nickname">닉네임 <span class="req">*</span></label>
+          <input id="nickname" name="nickname" type="text" placeholder="닉네임을 입력하세요" required />
+          <small class="helper">* helper text</small>
+        </div>
+
+        <button class="btn btn-primary" type="submit">회원가입</button>
+      </form>
+
+      <p class="to-login">
+        <a href="#" id="to-login-link">로그인하러 가기</a>
+      </p>
+    </section>
+  </main>
+
+  <!-- (선택) 프로필 미리보기만 위한 소량의 JS -->
+ <script type="module">
+  // ---------- 공통: helper 토글 유틸 ----------
+  function setHelp(inputEl, message = "") {
+    const field = inputEl.closest('.field') || inputEl.closest('.card'); // 프로필은 card 레벨
+    const helper = field.querySelector('.helper');
+    if (!helper) return;
+
+    if (message) {
+      helper.textContent = message;
+      helper.classList.add('show');
+      inputEl.setAttribute('aria-invalid', 'true');
+    } else {
+      helper.textContent = helper.dataset.default || ""; // 기본 텍스트가 있다면 유지
+      helper.classList.remove('show');
+      inputEl.removeAttribute('aria-invalid');
+    }
+  }
+
+  // ---------- 프로필 업로드 미리보기 + 필수 체크 ----------
+  const profileInput = document.getElementById('profile');
+  const preview = document.getElementById('preview');
+  const profileCard = profileInput.closest('.card');
+  const profileHelper = profileCard.querySelector('.helper');
+  // 기본 helper 메시지를 data-default로 저장(필요 시)
+  profileHelper.dataset.default = profileHelper.textContent.trim();
+
+  profileInput?.addEventListener('change', () => {
+    const f = profileInput.files?.[0];
+    if (!f) return;
+    const url = URL.createObjectURL(f);
+    preview.src = url;
+    preview.hidden = false;
+    // 업로드 했으니 에러 메시지 숨김
+    setHelp(profileInput, "");
+  });
+
+  // ---------- 이메일: 영문 + @ + . 만 허용 ----------
+  const email = document.getElementById('email');
+
+  // 입력 즉시 필터링(금지 문자 차단) 또는 에러 표시 중 택1
+  // ① 금지 문자를 즉시 제거하고 싶다면 아래 라인을 사용:
+  // email.addEventListener('input', () => {
+  //   email.value = email.value.replace(/[^A-Za-z@.]/g, '');
+  // });
+
+  // ② 에러 메시지로 안내(요구에 더 가깝다고 판단해서 기본값으로 채택)
+  email.addEventListener('input', () => {
+    const val = email.value;
+    const onlyAllowed = /^[A-Za-z@.]*$/.test(val);
+    if (!onlyAllowed) {
+      setHelp(email, "이메일은 영문과 @, .만 사용할 수 있어요.");
+    } else {
+      setHelp(email, "");
+    }
+  });
+
+  // ---------- 폼 제출 검증 ----------
+  const form = document.getElementById('signup-form');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    let hasError = false;
+
+    // 1) 프로필 필수: 업로드 없으면 메시지
+    if (!profileInput.files || profileInput.files.length === 0) {
+      setHelp(profileInput, "*프로필 사진을 추가해주세요.");
+      hasError = true;
+    } else {
+      setHelp(profileInput, "");
+    }
+
+    // 2) 이메일 허용 문자 재검증
+    if (!/^[A-Za-z@.]+$/.test(email.value)) {
+      setHelp(email, "이메일은 영문과 @, .만 사용할 수 있어요.");
+      hasError = true;
+    } else {
+      setHelp(email, "");
+    }
+
+    // 3) 비밀번호/확인/닉네임(기본 예시)
+    const pw = document.getElementById('password');
+    const confirm = document.getElementById('confirm');
+    const nick = document.getElementById('nickname');
+
+    if (pw.value.length < 8 || pw.value.length > 20) {
+      setHelp(pw, "비밀번호는 8~20자여야 해요.");
+      hasError = true;
+    } else {
+      setHelp(pw, "");
+    }
+
+    if (confirm.value !== pw.value) {
+      setHelp(confirm, "비밀번호가 일치하지 않습니다.");
+      hasError = true;
+    } else {
+      setHelp(confirm, "");
+    }
+
+    if (!nick.value.trim()) {
+      setHelp(nick, "닉네임을 입력하세요.");
+      hasError = true;
+    } else {
+      setHelp(nick, "");
+    }
+
+    if (hasError) return;
+
+    // TODO: 여기서 실제 fetch 호출로 교체
+    alert("검증 통과! 이제 서버로 전송하면 됩니다.");
+  });
+
+  // ---------- 접근성: 아바타 업로더 클릭시 파일 열기 ----------
+  // (라벨 클릭으로 이미 열리지만, 키보드 접근성을 위해 Enter/Space 대응)
+  const uploader = document.querySelector('.avatar-uploader');
+  uploader.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter' || ev.key === ' ') {
+      ev.preventDefault();
+      profileInput.click();
+    }
+  });
+  uploader.setAttribute('tabindex', '0');
+</script>
+
+</body>
+</html>
