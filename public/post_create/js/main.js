@@ -55,7 +55,7 @@ async function handleSubmit(e) {
   fd.append('title', DOM.titleInput.value.trim());
   fd.append('body', DOM.bodyInput.value.trim());
   const file = DOM.imageInput?.files?.[0];
-  if (file) fd.append('image', file, file.name);
+  if (file) fd.append('file', file, file.name);
 
   const originalText = DOM.submitBtn.textContent;
   setSubmitting(true);
