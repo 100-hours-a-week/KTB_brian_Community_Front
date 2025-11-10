@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>게시글 상세 - 아무 말 대잔치</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div class="app">
+    <!-- 공통 헤더 -->
+    <header class="header" role="banner">
+        <div class="header__inner container">
+            <button class="icon-btn" id="backBtn" aria-label="뒤로가기">
+                <svg viewBox="0 0 11 19" aria-hidden="true"><path d="M10 1 L2 9 L10 17" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <h1 class="header__title">아무 말 대잔치</h1>
+            <button class="avatar-btn" id="meBtn" aria-label="내 프로필"><img src="./assets/avatar.svg" alt="나의 프로필" /></button>
+        </div>
+    </header>
+
+    <!-- 본문 -->
+    <main class="container" role="main">
+        <article class="post">
+            <!-- 제목 + 메타 -->
+            <header class="post__head">
+                <h2 class="post__title">제목 1</h2>
+                <div class="post__meta">
+                    <div class="author">
+                        <span class="author__avatar" aria-hidden="true"></span>
+                        <span class="author__name">더미 작성자1</span>
+                    </div>
+                    <time class="post__time" datetime="2021-01-01T00:00:00">2021-01-01 00:00:00</time>
+                    <div class="post__actions">
+                        <button class="chip chip--ghost" id="editPostBtn" type="button">수정</button>
+                        <button class="chip chip--ghost danger" id="deletePostBtn" type="button">삭제</button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 본문 이미지(선택) -->
+            <figure class="post__media">
+                <div class="media__ph" aria-hidden="true"></div>
+            </figure>
+
+            <!-- 본문 텍스트 -->
+            <div class="post__body">
+                무얼 얘기할까요? 아무말이면, 실은 항상 분량은 모를바라고 생각합니다. …
+            </div>
+
+            <!-- 통계/버튼 패널 -->
+            <section class="post__stats">
+                <button class="stat stat--like" id="likeBtn" data-liked="false" aria-pressed="false">
+                    <span class="stat__num" id="likeNum" data-count="123">123</span>
+                    <span class="stat__label">좋아요</span>
+                </button>
+                <div class="stat">
+                    <span class="stat__num" id="viewNum" data-count="123">123</span>
+                    <span class="stat__label">조회수</span>
+                </div>
+                <div class="stat">
+                    <span class="stat__num" id="commentNum" data-count="123">123</span>
+                    <span class="stat__label">댓글</span>
+                </div>
+            </section>
+
+            <!-- 댓글 작성 -->
+            <section class="comment-write">
+                <label class="sr-only" for="commentInput">댓글을 남겨주세요</label>
+                <textarea id="commentInput" class="comment-write__input" placeholder="댓글을 남겨주세요!"></textarea>
+                <div class="comment-write__actions">
+                    <button class="btn btn--primary" id="commentSubmit" type="button" disabled>댓글 등록</button>
+                </div>
+            </section>
+
+            <!-- 댓글 목록 -->
+            <section class="comments" aria-label="댓글 목록">
+                <!-- 예시 아이템 -->
+                <article class="comment" data-id="c1">
+                    <div class="comment__meta">
+                        <span class="author__avatar" aria-hidden="true"></span>
+                        <span class="author__name">더미 작성자1</span>
+                        <time class="comment__time" datetime="2021-01-01T00:00:00">2021-01-01 00:00:00</time>
+                    </div>
+                    <div class="comment__body">댓글 내용</div>
+                    <div class="comment__actions">
+                        <button class="chip chip--ghost" data-action="edit">수정</button>
+                        <button class="chip chip--ghost danger" data-action="delete">삭제</button>
+                    </div>
+                </article>
+            </section>
+        </article>
+    </main>
+</div>
+
+<!-- 모달(공통) :: 게시글 삭제 -->
+<div class="modal" id="postDeleteModal" aria-hidden="true">
+    <div class="modal__backdrop"></div>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="postDelTitle">
+        <h4 class="modal__title" id="postDelTitle">게시글을 삭제하시겠습니까?</h4>
+        <p class="modal__desc">삭제한 내용은 복구 할 수 없습니다.</p>
+        <div class="modal__actions">
+            <button class="btn btn--dark" data-close>취소</button>
+            <button class="btn btn--primary" id="postDeleteConfirm">확인</button>
+        </div>
+    </div>
+</div>
+
+<!-- 모달(공통) :: 댓글 삭제 -->
+<div class="modal" id="commentDeleteModal" aria-hidden="true">
+    <div class="modal__backdrop"></div>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="cmtDelTitle">
+        <h4 class="modal__title" id="cmtDelTitle">댓글을 삭제하시겠습니까?</h4>
+        <p class="modal__desc">삭제한 내용은 복구 할 수 없습니다.</p>
+        <div class="modal__actions">
+            <button class="btn btn--dark" data-close>취소</button>
+            <button class="btn btn--primary" id="commentDeleteConfirm">확인</button>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="./main.js"></script>
+</body>
+</html>
