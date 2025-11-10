@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>게시판 - 아무 말 대잔치</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="app">
+    <header class="header" role="banner">
+      <div class="header__inner">
+        <h1 class="header__title">아무 말 대잔치</h1>
+        <div class="header__right">
+          <div class="avatar" aria-hidden="true" data-avatar-menu></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container" role="main">
+      <section class="hero">
+        <p class="hero__greet">안녕하세요,<br />아무 말 대잔치 <b>게시판</b> 입니다.</p>
+        <button class="btn hero__cta" type="button" data-btn-new-post>게시글 작성</button>
+      </section>
+
+      <section class="post-list mt-8" aria-label="게시글 목록" data-post-list></section>
+      <p class="post-list__empty" id="post-empty-state" hidden>작성된 게시글이 없습니다.</p>
+
+      <template id="post-card-template">
+        <article class="post-card">
+          <div class="post-card__inner">
+            <div class="post-card__head">
+              <h2 class="post-card__title" data-post-title></h2>
+              <time class="post-card__time" data-post-time></time>
+            </div>
+            <div class="post-card__stats">
+              <span class="likes" data-post-likes></span>
+              <span class="comments" data-post-comments></span>
+              <span class="views" data-post-views></span>
+            </div>
+            <div class="post-card__divider"></div>
+            <div class="post-card__author">
+              <div class="avatar" data-post-avatar>
+                <img alt="" data-post-avatar-img />
+              </div>
+              <span class="post-card__name" data-post-author></span>
+            </div>
+          </div>
+        </article>
+      </template>
+      <div id="infinite-sentinel" aria-hidden="true"></div>
+    </main>
+  </div>
+
+  <script type="module" src="../board/js/board.js"></script>
+</body>
+
+</html>
