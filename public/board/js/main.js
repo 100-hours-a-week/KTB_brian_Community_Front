@@ -105,7 +105,7 @@ function initInfiniteScroll() {
 function initNewPostButton() {
   if (!DOM.newPostBtn) return;
   DOM.newPostBtn.addEventListener('click', () => {
-    alert('게시글 작성 페이지가 준비 중입니다.');
+    window.location.href = '../post_create/index.html';
   });
 }
 
