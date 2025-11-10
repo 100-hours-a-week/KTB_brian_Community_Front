@@ -2,6 +2,8 @@ import { fetchPosts, fetchImageWithAuth } from './api.js';
 import { DOM } from './dom.js';
 import { renderPosts, toggleEmptyState } from './ui.js';
 import { normalizePostsResponse } from './utils.js';
+import { fetchCurrentUser } from '../../mypage/js/api.js';
+import { initAvatarSync } from '../../shared/avatar-sync.js';
 
 const state = {
   page: 0,
@@ -12,6 +14,7 @@ const state = {
 };
 
 const avatarCache = new Map();
+let headerAvatarController = null;
 
 function disconnectObserver() {
   if (state.observer && DOM.sentinel) {
@@ -109,11 +112,51 @@ function initNewPostButton() {
 function releaseAvatarUrls() {
   avatarCache.forEach((url) => URL.revokeObjectURL(url));
   avatarCache.clear();
+  if (headerAvatarController?.destroy) {
+    headerAvatarController.destroy();
+  }
+}
+
+async function hydrateCurrentUser() {
+  if (!headerAvatarController) return;
+
+  try {
+    const res = await fetchCurrentUser();
+    if (res.status === 401) {
+      window.location.href = '../login/index.html';
+      return;
+    }
+    if (!res.ok) throw new Error(`사용자 정보 요청 실패 (${res.status})`);
+
+    const payload = await res.json();
+    const user = payload?.data ?? payload ?? {};
+
+    if (user.imageUrl) {
+      try {
+        const resImg = await fetchImageWithAuth(user.imageUrl);
+        if (!resImg.ok) throw new Error(`헤더 이미지 응답 오류 (${resImg.status})`);
+        const blob = await resImg.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        headerAvatarController.setAvatar(objectUrl, { track: 'external' });
+      } catch (imgErr) {
+        console.warn('헤더 아바타 이미지를 불러오지 못했습니다.', imgErr);
+      }
+    } else {
+      headerAvatarController.setAvatar(null);
+    }
+  } catch (err) {
+    console.warn('사용자 정보를 불러오지 못했습니다.', err);
+  }
 }
 
 function init() {
   initNewPostButton();
   initInfiniteScroll();
+  headerAvatarController = initAvatarSync({
+    previewSelector: '[data-avatar-preview]',
+    targetSelectors: ['[data-avatar-menu]'],
+  });
+  hydrateCurrentUser();
   loadPosts();
   window.addEventListener('beforeunload', releaseAvatarUrls, { once: true });
 }
