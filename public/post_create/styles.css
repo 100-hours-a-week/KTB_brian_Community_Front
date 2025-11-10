@@ -7,7 +7,9 @@
     --muted: #6b6b6b;
     --danger: #FF0000;
     --line: #000;
+    --divider: #E5E5E5;
     --r-sm: 4px;
+    --r-lg: 16px;
     --fs-14: 14px;
     --fs-15: 15px;
     --fs-32: 32px;
@@ -22,14 +24,16 @@ body {
 }
 
 .app {
-    display: flex;
     min-height: 100vh;
     background: var(--bg-surface);
+    display: flex;
+    flex-direction: column;
 }
 
 .header {
     position: sticky;
     top: 0;
+    z-index: 10;
     background: var(--bg-page);
     border-bottom: 1px solid var(--line);
     height: 104px;
@@ -41,6 +45,9 @@ body {
     justify-content: center;
     height: 100%;
     position: relative;
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 24px;
 }
 
 .header__title {
@@ -50,25 +57,85 @@ body {
 
 .icon-btn {
     position: absolute;
-    left: 16px;
+    left: 24px;
     background: none;
     border: none;
     cursor: pointer;
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r-sm);
 }
 
-.header__avatar {
+.user-menu {
     position: absolute;
     right: 24px;
+}
+
+.user-menu summary {
+    list-style: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+}
+
+.user-menu summary::-webkit-details-marker {
+    display: none;
+}
+
+.user-menu .menu {
+    position: absolute;
+    right: 0;
+    margin-top: 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--divider);
+    border-radius: var(--r-sm);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    display: none;
+    flex-direction: column;
+    min-width: 160px;
+    z-index: 20;
+}
+
+.user-menu[open] .menu {
+    display: flex;
+}
+
+.user-menu .menu a {
+    padding: 12px 16px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: var(--fs-14);
+}
+
+.user-menu .menu a:hover {
+    background: var(--bg-page);
+}
+
+.avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: #ccc;
+    background: #C4C4C4;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .container {
     flex: 1;
-    padding: 32px;
-    max-width: 900px;
+    padding: 32px 24px 48px;
+    max-width: 920px;
+    width: 100%;
     margin: 0 auto;
 }
 
@@ -107,6 +174,7 @@ body {
 
 .field__textarea {
     resize: none;
+    min-height: 200px;
 }
 
 .field__helper {
@@ -116,18 +184,28 @@ body {
     margin: 4px 0 0;
 }
 
+.field.field--error .field__input,
+.field.field--error .field__textarea {
+    border-color: var(--danger);
+}
+
+.field.field--error .field__helper {
+    color: var(--danger);
+}
+
 .actions {
     margin-top: 16px;
 }
 
 .btn {
     width: 100%;
-    height: 40px;
+    height: 44px;
     border-radius: var(--r-sm);
     font-weight: 700;
     font-size: var(--fs-14);
     border: none;
     cursor: pointer;
+    transition: background 0.2s ease;
 }
 
 .btn--primary {
@@ -135,17 +213,11 @@ body {
     color: #fff;
 }
 
-.btn--primary.active {
-    background: var(--primary-active);
+.btn--primary:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
 }
 
-/* 개발 참고용 가이드 */
-.guide {
-    width: 260px;
-    background: #fff;
-    border-left: 1px solid #ccc;
-    padding: 16px;
-    font-size: 13px;
-    line-height: 1.5;
-    display: none; /* 필요 시 표시 */
+.btn--primary.is-active {
+    background: var(--primary-active);
 }
