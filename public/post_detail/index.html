@@ -82,7 +82,7 @@
 </div>
 
 <template id="comment-item-template">
-    <article class="comment">
+    <article class="comment comment--card" data-comment-id="">
         <div class="comment__meta">
             <span class="author__avatar" aria-hidden="true"></span>
             <span class="author__name"></span>
@@ -95,6 +95,7 @@
         </div>
     </article>
 </template>
+
 
 <!-- 모달(공통) :: 게시글 삭제 -->
 <div class="modal" id="postDeleteModal" aria-hidden="true">

@@ -73,10 +73,40 @@ body{margin:0;font-family:Pretendard,system-ui,Apple SD Gothic Neo,Segoe UI,Robo
 .comments__empty{text-align:center;color:var(--muted);margin-top:var(--s-4)}
 .comment{padding:12px;border-bottom:1px solid #eee}
 .comment__meta{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.comment__time{margin-left:auto;color:#666;font-size:12px}
+.comment__time{
+    margin-left:20px;
+    width:133px;
+    height:18px;
+    border-radius:9px;
+    background:#F4F5F7;
+    color:#666;
+    font-size:12px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
 .comment__body{line-height:1.5}
 .comment__actions{display:flex;gap:8px;margin-top:8px}
 .comment textarea{width:100%;min-height:120px;border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;font-size:var(--fs-14);margin-top:8px}
+/* comment card */
+.comment--card{
+    background:#fff;
+    border:1px solid #e6e6e6;
+    border-radius:12px;
+    padding:12px 14px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+.comment--card .comment__meta{ margin-bottom:6px; }
+.comment--card .comment__body{
+    padding:8px 0;
+    white-space:pre-wrap; /* 줄바꿈/개행 존중 */
+}
+.comment--card .comment__actions{
+    justify-content:flex-end;
+}
+
+
 
 /* specs side (optional) */
 .spec{margin-top:40px;padding:16px;border:1px dashed #ccc;border-radius:12px;background:#fafafa}
