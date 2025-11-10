@@ -28,6 +28,12 @@ export function renderPosts(posts, { requestAvatar } = {}) {
 
     const node = resolveTemplateRoot();
     if (!node) return;
+    if (post.id != null) {
+      node.dataset.postId = String(post.id);
+      node.tabIndex = 0;
+      node.setAttribute('role', 'button');
+      node.setAttribute('aria-label', `${post.title || '게시글'} 상세 보기`);
+    }
 
     const titleEl = node.querySelector('[data-post-title]');
     const timeEl = node.querySelector('[data-post-time]');

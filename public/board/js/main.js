@@ -109,6 +109,28 @@ function initNewPostButton() {
   });
 }
 
+function handlePostNavigate(target) {
+  const card = target.closest('.post-card');
+  if (!card || !card.dataset.postId) return;
+  const postId = card.dataset.postId;
+  window.location.href = `../post_detail/index.html?postId=${encodeURIComponent(
+    postId,
+  )}`;
+}
+
+function initPostNavigation() {
+  if (!DOM.postList) return;
+  DOM.postList.addEventListener('click', (e) => {
+    handlePostNavigate(e.target);
+  });
+  DOM.postList.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      handlePostNavigate(e.target);
+      if (e.key === ' ') e.preventDefault();
+    }
+  });
+}
+
 function releaseAvatarUrls() {
   avatarCache.forEach((url) => URL.revokeObjectURL(url));
   avatarCache.clear();
@@ -151,6 +173,7 @@ async function hydrateCurrentUser() {
 
 function init() {
   initNewPostButton();
+  initPostNavigation();
   initInfiniteScroll();
   headerAvatarController = initAvatarSync({
     previewSelector: '[data-avatar-preview]',
