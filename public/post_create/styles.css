@@ -1,0 +1,151 @@
+:root {
+    --bg-page: #F4F5F7;
+    --bg-surface: #FFFFFF;
+    --primary: #ACA0EB;
+    --primary-active: #7F6AEE;
+    --text: #000;
+    --muted: #6b6b6b;
+    --danger: #FF0000;
+    --line: #000;
+    --r-sm: 4px;
+    --fs-14: 14px;
+    --fs-15: 15px;
+    --fs-32: 32px;
+    --lh-100: 100%;
+}
+
+body {
+    margin: 0;
+    background: #eaeaea;
+    color: var(--text);
+    font-family: 'Pretendard', system-ui, sans-serif;
+}
+
+.app {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg-surface);
+}
+
+.header {
+    position: sticky;
+    top: 0;
+    background: var(--bg-page);
+    border-bottom: 1px solid var(--line);
+    height: 104px;
+}
+
+.header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    position: relative;
+}
+
+.header__title {
+    font-size: var(--fs-32);
+    font-weight: 400;
+}
+
+.icon-btn {
+    position: absolute;
+    left: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.header__avatar {
+    position: absolute;
+    right: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ccc;
+}
+
+.container {
+    flex: 1;
+    padding: 32px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.page-title {
+    text-align: center;
+    font-size: var(--fs-32);
+    margin-bottom: 40px;
+}
+
+.form {
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+}
+
+.field__label {
+    font-weight: 700;
+    font-size: var(--fs-15);
+    margin-bottom: 8px;
+}
+
+.field__input,
+.field__textarea {
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    padding: 8px 12px;
+    font-size: var(--fs-14);
+}
+
+.field__textarea {
+    resize: none;
+}
+
+.field__helper {
+    font-size: 12px;
+    color: var(--danger);
+    min-height: 14px;
+    margin: 4px 0 0;
+}
+
+.actions {
+    margin-top: 16px;
+}
+
+.btn {
+    width: 100%;
+    height: 40px;
+    border-radius: var(--r-sm);
+    font-weight: 700;
+    font-size: var(--fs-14);
+    border: none;
+    cursor: pointer;
+}
+
+.btn--primary {
+    background: var(--primary);
+    color: #fff;
+}
+
+.btn--primary.active {
+    background: var(--primary-active);
+}
+
+/* 개발 참고용 가이드 */
+.guide {
+    width: 260px;
+    background: #fff;
+    border-left: 1px solid #ccc;
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    display: none; /* 필요 시 표시 */
+}
