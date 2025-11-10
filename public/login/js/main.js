@@ -35,16 +35,11 @@ async function handleSubmit(e){
   try{
     const res = await loginRequest({ email: DOM.inputEmail.value, password: DOM.inputPw.value });
 
-    if(res.status === 401){
-      setFieldHelper(DOM.fieldPw, DOM.helpPw, '이메일 또는 비밀번호가 올바르지 않습니다.', 'error');
-      updateSubmitState(DOM.btn, isAllValidSync);
-      return;
-    }
     if(!res.ok){
       let msg = '로그인에 실패했습니다. 잠시 후 다시 시도해주세요.';
       try{
-        const data = await res.json();
-        if(data && typeof data.message === 'string') msg = data.message;
+        const json = await res.json();
+        if(json && typeof json.message === 'string') msg = json.message;
       }catch{}
       alert(msg);
       return;
@@ -62,7 +57,7 @@ async function handleSubmit(e){
     setCookie('tokenType',   type,    { maxAge: expiresIn, path: '/' });
 
     // 🎯 목록 페이지로 이동 (경로는 프로젝트 구조에 맞게 조정)
-    window.location.href = '../../com/board_com.html';
+    window.location.href = '../../board/index.html';
 
   }catch(err){
     alert('네트워크 오류가 발생했습니다.');
