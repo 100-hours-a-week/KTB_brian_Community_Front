@@ -57,7 +57,7 @@ async function handleSubmit(e){
     setCookie('tokenType',   type,    { maxAge: expiresIn, path: '/' });
 
     // 🎯 목록 페이지로 이동 (경로는 프로젝트 구조에 맞게 조정)
-    window.location.href = '../../board/index.html';
+    window.location.href = '../board/index.html';
 
   }catch(err){
     alert('네트워크 오류가 발생했습니다.');
