@@ -90,10 +90,9 @@ body {
   white-space: nowrap;
 }
 
-/* Back icon button */
-.icon-btn {
+.header--with-back .icon-btn {
   position: absolute;
-  left: 0;
+  left: 24px;
   display: inline-grid;
   place-items: center;
   width: 40px;
@@ -104,10 +103,16 @@ body {
   cursor: pointer;
 }
 
-.icon-btn svg {
+.header--with-back .icon-btn svg {
   display: block;
   width: 11px;
   height: 19px;
+}
+
+.header--with-back .header__title {
+  margin: 0 auto;
+  padding-left: 0;
+  text-align: center;
 }
 
 /* Container */
