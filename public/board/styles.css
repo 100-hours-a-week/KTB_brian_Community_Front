@@ -106,7 +106,7 @@ body {
   position: absolute;
   right: 0;
   margin-top: var(--s-2);
-  background: var(--bg-surface);
+  background: #D9D9D9;
   border: 1px solid var(--divider);
   border-radius: var(--r-sm);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -124,7 +124,7 @@ body {
 }
 
 .user-menu .menu a:hover {
-  background: var(--bg-page);
+  background: #E9E9E9;
 }
 
 .avatar {
@@ -260,6 +260,10 @@ body {
 
 .hero__cta {
   justify-self: end;
+}
+
+.hero__cta:hover {
+  background: #7F6AEE;
 }
 
 .mt-6 {
