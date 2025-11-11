@@ -1,6 +1,6 @@
 import { DOM } from './dom.js';
 import { buildFormData } from './utils.js';
-import { updateSubmitState, hasAnyFieldError, setFieldHelper } from './ui.js';
+import { updateSubmitState, hasAnyFieldError, setFieldHelper, setProfileHelper } from './ui.js';
 import {
   validateProfile,
   validateEmailSync, validateEmailAsyncDup,
@@ -21,7 +21,12 @@ function isAllValidSync() {
 function initProfilePicker() {
   DOM.profileInput.addEventListener('change', () => {
     const file = DOM.profileInput.files && DOM.profileInput.files[0];
-    if (!file) { updateSubmitState(isAllValidSync); return; }
+    if (!file) {
+      DOM.profileWrap.classList.remove('has-image');
+      setProfileHelper(true);
+      updateSubmitState(isAllValidSync);
+      return;
+    }
     const url = URL.createObjectURL(file);
     DOM.profileImg.src = url;
     DOM.profileImg.onload = () => URL.revokeObjectURL(url);
@@ -127,6 +132,7 @@ async function handleSubmit(e) {
 function init() {
   initProfilePicker();
   initFieldEvents();
+  setProfileHelper(true);
   updateSubmitState(isAllValidSync);
 }
 

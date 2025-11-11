@@ -190,18 +190,6 @@ body {
 }
 
 /* Profile Picker */
-.profile {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-2);
-  align-items: center;
-}
-
-.profile__label {
-  font-weight: 700;
-  font-size: var(--fs-15);
-}
-
 .profile__helper {
   margin: 0;
   font-family: 'Inter', var(--font-body);
@@ -210,6 +198,7 @@ body {
   line-height: var(--lh-100);
   min-height: 15px;
   visibility: hidden;
+  text-align: left;
 }
 
 .profile__upload {
@@ -260,6 +249,15 @@ body {
   position: absolute;
   width: 24px;
   height: 24px;
+}
+
+.field--profile {
+  align-items: flex-start;
+}
+
+.field--profile .profile__upload {
+  margin-top: var(--s-2);
+  align-self: center;
 }
 
 /* Actions & Buttons */
