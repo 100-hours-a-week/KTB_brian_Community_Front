@@ -2,7 +2,7 @@ import { initAvatarSync } from '../../shared/avatar-sync.js';
 import { fetchCurrentUser, fetchUserImage, updateUserProfile } from './api.js';
 import { DOM } from './dom.js';
 import { setFieldHelper } from './ui.js';
-import { validateNickname } from '../../shared/validators.js';
+import { validateNickname } from './validators.js';
 
 const state = {
   originalNickname: '',

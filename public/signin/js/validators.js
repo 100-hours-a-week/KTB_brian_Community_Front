@@ -1,8 +1,14 @@
 // 동기 검증 + 비동기 중복검사 트리거
 import { DOM } from './dom.js';
-import { EMAIL_RE, PW_RE, hasWhitespace, withinLen } from './utils.js';
+import { hasWhitespace, withinLen } from './utils.js';
 import { setFieldHelper, setProfileHelper } from './ui.js';
 import { checkEmailDup, checkNickDup } from './availability.js';
+import {
+  EMAIL_RE,
+  PW_RE,
+  validateEmailValue,
+  validatePasswordValue,
+} from '../../shared/validators.js';
 
 // 프로필
 export function validateProfile({ showMsg=false } = {}) {
@@ -15,9 +21,15 @@ export function validateProfile({ showMsg=false } = {}) {
 // 이메일
 export function validateEmailSync({ showMsg=false } = {}) {
   const v = (DOM.inputEmail.value || '').trim();
-  if (!v) { if (showMsg) setFieldHelper(DOM.fieldEmail, DOM.helpEmail, '*이메일을 입력해주세요.', 'error'); return false; }
-  if (v.length < 5 || !EMAIL_RE.test(v)) {
-    if (showMsg) setFieldHelper(DOM.fieldEmail, DOM.helpEmail, '*올바른 이메일 주소 형식을 입력해주세요.(예: example@example.com)', 'error');
+  const result = validateEmailValue(v);
+  if (!result.valid) {
+    if (showMsg) {
+      const msg =
+        result.reason === 'pattern'
+          ? '*올바른 이메일 주소 형식을 입력해주세요.(예: example@example.com)'
+          : '*이메일을 입력해주세요.';
+      setFieldHelper(DOM.fieldEmail, DOM.helpEmail, msg, 'error');
+    }
     return false;
   }
   if (showMsg) setFieldHelper(DOM.fieldEmail, DOM.helpEmail, null, null);
@@ -36,9 +48,16 @@ export function validateEmailAsyncDup(onDone) {
 // 비밀번호
 export function validatePasswordSync({ showMsg=false } = {}) {
   const v = DOM.inputPw.value || '';
-  if (!v) { if (showMsg) setFieldHelper(DOM.fieldPw, DOM.helpPw, '*비밀번호를 입력해주세요', 'error'); return false; }
-  if (!PW_RE.test(v)) {
-    if (showMsg) setFieldHelper(DOM.fieldPw, DOM.helpPw, '*8~20자, 대문자·소문자·숫자·특수문자 각각 1개 이상 포함해야 합니다.', 'error');
+  const result = validatePasswordValue(v, { minLength: 8, pattern: PW_RE });
+  if (!result.valid) {
+    if (showMsg) {
+      let msg = '*비밀번호를 입력해주세요';
+      if (result.reason === 'min' || result.reason === 'pattern') {
+        msg =
+          '*8~20자, 대문자·소문자·숫자·특수문자 각각 1개 이상 포함해야 합니다.';
+      }
+      setFieldHelper(DOM.fieldPw, DOM.helpPw, msg, 'error');
+    }
     return false;
   }
   if (showMsg) setFieldHelper(DOM.fieldPw, DOM.helpPw, null, null);

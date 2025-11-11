@@ -1,6 +1,4 @@
 // utils.js
-export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export function jsonFetch(url, options = {}) {
   return fetch(url, {
     headers: { 'Accept':'application/json', 'Content-Type':'application/json', ...(options.headers||{}) },

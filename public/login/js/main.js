@@ -36,12 +36,8 @@ async function handleSubmit(e){
     const res = await loginRequest({ email: DOM.inputEmail.value, password: DOM.inputPw.value });
 
     if(!res.ok){
-      let msg = '로그인에 실패했습니다. 잠시 후 다시 시도해주세요.';
-      try{
-        const json = await res.json();
-        if(json && typeof json.message === 'string') msg = json.message;
-      }catch{}
-      alert(msg);
+      setFieldHelper(DOM.fieldPw, DOM.helpPw, '*아이디 또는 비밀번호를 확인해주세요.', 'error');
+      updateSubmitState(DOM.btn, isAllValidSync);
       return;
     }
 

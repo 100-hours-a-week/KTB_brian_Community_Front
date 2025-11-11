@@ -1,44 +1,33 @@
-import { DOM } from '../mypage/js/dom.js';
-import { setFieldHelper } from '../mypage/js/ui.js';
+export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export const PW_RE =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,20}$/;
 
-export function validateNickname({ showMsg = false } = {}) {
-  const value = (DOM.nicknameInput?.value || '').trim();
-  if (!value) {
-    if (showMsg) {
-      setFieldHelper(
-        DOM.nicknameField,
-        DOM.nicknameHelper,
-        '*닉네임을 입력해주세요.',
-        'error',
-      );
-    }
-    return false;
-  }
-  if (/\s/.test(value)) {
-    if (showMsg) {
-      setFieldHelper(
-        DOM.nicknameField,
-        DOM.nicknameHelper,
-        '*띄어쓰기를 없애주세요.',
-        'error',
-      );
-    }
-    return false;
-  }
-  if (value.length > 10) {
-    if (showMsg) {
-      setFieldHelper(
-        DOM.nicknameField,
-        DOM.nicknameHelper,
-        '*닉네임은 최대 10자까지 작성 가능합니다.',
-        'error',
-      );
-    }
-    return false;
-  }
+export function validateEmailValue(value) {
+  const trimmed = (value || '').trim();
+  if (!trimmed) return { valid: false, reason: 'required' };
+  if (!EMAIL_RE.test(trimmed)) return { valid: false, reason: 'pattern' };
+  return { valid: true, value: trimmed };
+}
 
-  if (showMsg) {
-    setFieldHelper(DOM.nicknameField, DOM.nicknameHelper, null, null);
-  }
-  return true;
+export function validatePasswordValue(
+  value,
+  { minLength = 8, maxLength, pattern } = {},
+) {
+  const raw = value || '';
+  if (!raw) return { valid: false, reason: 'required' };
+  if (minLength && raw.length < minLength)
+    return { valid: false, reason: 'min', limit: minLength };
+  if (maxLength && raw.length > maxLength)
+    return { valid: false, reason: 'max', limit: maxLength };
+  if (pattern && !pattern.test(raw))
+    return { valid: false, reason: 'pattern' };
+  return { valid: true, value: raw };
+}
+
+export function hasWhitespace(value) {
+  return /\s/.test(value || '');
+}
+
+export function withinLen(value, max) {
+  return (value || '').length <= max;
 }
