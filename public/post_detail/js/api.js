@@ -47,7 +47,7 @@ export function updateComment(postId, commentId, content) {
       'Content-Type': 'application/json',
     }),
     credentials: 'include',
-    body: JSON.stringify({ content }),
+    body: JSON.stringify({ body: content }),
   });
 }
 
