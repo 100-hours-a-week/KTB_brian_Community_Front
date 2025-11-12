@@ -1,7 +1,9 @@
 import { DOM } from './dom.js';
 import { updateSubmitState, showToast } from './ui.js';
 import { validatePassword, validatePasswordConfirm } from './validators.js';
-import { updatePassword } from './api.js';
+import { updatePassword, fetchImageWithAuth } from './api.js';
+import { initAvatarSync } from '../../shared/avatar-sync.js';
+import { fetchCurrentUser } from '../../mypage/js/api.js';
 
 function isAllValid() {
   const okPass = validatePassword({ showMsg: false });
@@ -48,7 +50,7 @@ async function handleSubmit(e) {
   DOM.submitBtn.textContent = '수정 중...';
 
   try {
-    const res = await updatePassword(fd);
+    const res = await updatePassword({ password: DOM.passwordInput.value.trim() });
     if (res.status === 401) {
       window.location.href = '../login/index.html';
       return;
@@ -75,6 +77,10 @@ async function handleSubmit(e) {
   }
 }
 
+const state = {
+  avatarController: null,
+};
+
 function initBackButton() {
   DOM.backBtn?.addEventListener('click', (e) => {
     e.preventDefault();
@@ -83,10 +89,44 @@ function initBackButton() {
   });
 }
 
+async function hydrateUser() {
+  if (!state.avatarController) return;
+  try {
+    const res = await fetchCurrentUser();
+    if (res.status === 401) {
+      window.location.href = '../login/index.html';
+      return;
+    }
+    if (!res.ok) throw new Error(`사용자 정보 요청 실패 (${res.status})`);
+    const payload = await res.json();
+    const user = payload?.data ?? payload ?? {};
+    if (user.imageUrl) {
+      try {
+        const resImg = await fetchImageWithAuth(user.imageUrl);
+        if (!resImg.ok) throw new Error('이미지 응답 오류');
+        const blob = await resImg.blob();
+        const url = URL.createObjectURL(blob);
+        state.avatarController.setAvatar(url, { track: 'external' });
+      } catch (err) {
+        console.warn('헤더 아바타 로드 실패', err);
+      }
+    } else {
+      state.avatarController.setAvatar(null);
+    }
+  } catch (err) {
+    console.warn('사용자 정보를 불러오지 못했습니다.', err);
+  }
+}
+
 function init() {
   bindFieldEvents();
   DOM.form?.addEventListener('submit', handleSubmit);
   initBackButton();
+  state.avatarController = initAvatarSync({
+    previewSelector: '[data-avatar-preview]',
+    targetSelectors: ['[data-avatar-menu]'],
+  });
+  hydrateUser();
   updateSubmitState(isAllValid);
 }
 

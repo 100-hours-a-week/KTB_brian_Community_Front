@@ -151,13 +151,14 @@ body {
 }
 
 .page-title {
-    margin: var(--s-6) 0;
+    margin: 50px 0;
     text-align: center;
     font-weight: 700;
     font-size: var(--fs-32);
 }
 
 .form {
+    margin-top: 100px;
     display: flex;
     flex-direction: column;
     gap: var(--s-4);
@@ -221,7 +222,7 @@ body {
 .toast {
     position: fixed;
     left: 50%;
-    bottom: 60px;
+    bottom: 160px;
     min-width: 102px;
     height: 46px;
     border-radius: 30px;
