@@ -186,18 +186,18 @@ details.user-menu[open] .menu {
     align-items: center;
 }
 
+.profile__info {
+    width: 100%;
+    max-width: 355px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
+    align-items: flex-start;
+}
+
 .profile__label {
     font-weight: 700;
     font-size: var(--fs-15);
-}
-
-.profile__helper {
-    margin: 0;
-    font-family: 'Inter', var(--font-body);
-    font-size: var(--fs-12);
-    color: #FF0000;
-    line-height: var(--lh-100);
-    min-height: 15px;
 }
 
 .profile__upload {
@@ -232,7 +232,7 @@ details.user-menu[open] .menu {
 
 /* Form */
 .form {
-    max-width: 600px;
+    max-width: 355px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -280,7 +280,6 @@ details.user-menu[open] .menu {
     flex-direction: column;
     align-items: center;
     gap: var(--s-3);
-    margin-top: var(--s-4);
 }
 
 .btn {
@@ -388,13 +387,13 @@ a:focus {
 
 .toast {
     position: fixed;
-    right: var(--s-6);
-    bottom: var(--s-6);
+    left: 50%;
+    bottom: 60px;
     min-width: 102px;
     height: 46px;
     border-radius: 30px;
     padding: 12px 20px;
-    background: #333;
+    background: var(--primary);
     color: #fff;
     font-family: 'Pretendard', system-ui, sans-serif;
     font-weight: 400;
@@ -403,7 +402,7 @@ a:focus {
     letter-spacing: -0.01em;
     text-align: center;
     opacity: 0;
-    transform: translateY(16px);
+    transform: translate(-50%, 16px);
     transition: opacity 0.25s ease, transform 0.25s ease;
     pointer-events: none;
     z-index: 200;
@@ -411,5 +410,5 @@ a:focus {
 
 .toast.is-visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, 0);
 }
