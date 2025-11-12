@@ -31,7 +31,7 @@
 
         <!-- 프로필 사진 -->
         <section class="profile" aria-label="프로필 사진">
-            <span class="profile__label">*프로필 사진</span>
+            <span class="profile__label">프로필 사진*</span>
             <div class="profile__upload" role="img" aria-label="현재 프로필">
                 <img class="profile__preview" src="" alt="현재 프로필 사진" data-avatar-preview />
                 <input id="profile-file-input" class="profile__file-input" type="file" accept="image/*" hidden />
@@ -74,6 +74,10 @@
         </div>
     </div>
 </section>
+
+<div class="toast" role="status" aria-live="polite" id="update-toast">
+    <span class="toast__text">수정 완료</span>
+</div>
 
 <script type="module" src="js/main.js"></script>
 </body>

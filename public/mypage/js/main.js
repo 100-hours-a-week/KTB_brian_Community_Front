@@ -117,8 +117,7 @@ async function handleSubmit(e) {
     }
 
     setFieldHelper(DOM.nicknameField, DOM.nicknameHelper, null, null);
-
-    alert('수정이 완료되었습니다.');
+    showToast();
   } catch (err) {
     console.error('프로필 수정 오류', err);
     alert('프로필 수정 중 오류가 발생했습니다.');
@@ -156,4 +155,13 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', bootMypage, { once: true });
 } else {
   bootMypage();
+}
+
+function showToast() {
+  const toast = document.getElementById('update-toast');
+  if (!toast) return;
+  toast.classList.add('is-visible');
+  setTimeout(() => {
+    toast.classList.remove('is-visible');
+  }, 2500);
 }

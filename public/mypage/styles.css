@@ -162,14 +162,15 @@ details.user-menu[open] .menu {
 .container {
     max-width: var(--container-max);
     margin: 0 auto;
-    padding: var(--container-pt) var(--s-6) var(--s-8);
+    margin-top: 100px;
+    padding: var(--s-6) var(--s-6) var(--s-8);
 }
 
 /* =====================
 2) Components
 ===================== */
 .page-title {
-    margin-top: calc(368px - var(--header-h) - var(--container-pt));
+    margin-top: var(--s-6);
     text-align: center;
     font-weight: 700;
     font-size: var(--fs-32);
@@ -383,4 +384,32 @@ details.user-menu[open] .menu {
 a:focus {
     outline: 2px solid #8aa1ff;
     outline-offset: 2px;
+}
+
+.toast {
+    position: fixed;
+    right: var(--s-6);
+    bottom: var(--s-6);
+    min-width: 102px;
+    height: 46px;
+    border-radius: 30px;
+    padding: 12px 20px;
+    background: #333;
+    color: #fff;
+    font-family: 'Pretendard', system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 120%;
+    letter-spacing: -0.01em;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+    z-index: 200;
+}
+
+.toast.is-visible {
+    opacity: 1;
+    transform: translateY(0);
 }
