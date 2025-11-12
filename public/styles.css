@@ -1,0 +1,308 @@
+/* ===================== 0) Design Tokens ===================== */
+:root {
+  /* colors */
+  --bg-page: #F4F5F7;
+  --bg-surface: #FFFFFF;
+  --text: #000000;
+  --muted: #6b6b6b;
+  --primary: #ACA0EB;
+  --line: #000000;
+
+  /* radius */
+  --r-sm: 4px;
+  --r-lg: 16px;
+
+  /* spacing (4px grid) */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+
+  /* typography */
+  --font-body: 'Pretendard', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  --font-display: 'Sandoll GogoRound', var(--font-body);
+  --fs-12: 12px;
+  --fs-14: 14px;
+  --fs-15: 15px;
+  --fs-16: 16px;
+  --fs-24: 24px;
+  --fs-32: 32px;
+  --lh-100: 100%;
+  --lh-130: 130%;
+
+  /* layout */
+  --container-max: 920px;
+  --container-pt: var(--s-6);
+  --header-h: 104px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #eaeaea;
+  color: var(--text);
+  font-family: var(--font-body);
+}
+
+/* ===================== 1) Page Shell ===================== */
+.app {
+  min-height: 100%;
+  background: var(--bg-surface);
+}
+
+/* Header */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: var(--header-h);
+  background: var(--bg-page);
+  border-bottom: 1px solid var(--line);
+}
+
+.header__inner {
+  max-width: var(--container-max);
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.header__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-32);
+  line-height: var(--lh-100);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.header--with-back .icon-btn {
+  position: absolute;
+  left: 24px;
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-sm);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.header--with-back .icon-btn svg {
+  display: block;
+  width: 11px;
+  height: 19px;
+}
+
+.header--with-back .header__title {
+  margin: 0 auto;
+  padding-left: 0;
+  text-align: center;
+}
+
+/* Container */
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--container-pt) var(--s-6) var(--s-8);
+}
+
+/* ===================== 2) Components ===================== */
+/* Page title (Figma top 265px 보정) */
+.page-title {
+  margin-top: calc(265px - var(--header-h) - var(--container-pt));
+  text-align: center;
+  font-weight: 700;
+  font-size: var(--fs-32);
+  line-height: var(--lh-100);
+  margin-bottom: var(--s-8);
+}
+
+/* Form shell */
+.form {
+  max-width: 355px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-6);
+}
+
+/* Field */
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field__label {
+  font-weight: 700;
+  font-size: var(--fs-15);
+  line-height: var(--lh-100);
+  margin-bottom: var(--s-2);
+}
+
+.field__input {
+  height: 33px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 6px 10px;
+  font-size: var(--fs-14);
+  margin-bottom: var(--s-1);
+}
+
+.field__input::placeholder {
+  color: var(--muted);
+}
+
+.field__helper {
+  margin: 0;
+  font-family: 'Inter', var(--font-body);
+  font-size: var(--fs-12);
+  color: #FF0000;
+  line-height: var(--lh-100);
+  min-height: 15px;
+  visibility: hidden;
+}
+
+.field.field--error .field__helper,
+.field.field--warn .field__helper,
+.field.field--info .field__helper {
+  visibility: visible;
+}
+
+.field.field--error .field__input {
+  border-color: #FF0000;
+  outline: none;
+}
+
+/* Profile Picker */
+.profile__helper {
+  margin: 0;
+  font-family: 'Inter', var(--font-body);
+  font-size: var(--fs-12);
+  color: #FF0000;
+  line-height: var(--lh-100);
+  min-height: 15px;
+  visibility: hidden;
+  text-align: left;
+}
+
+.profile__upload {
+  position: relative;
+  width: 149px;
+  height: 149px;
+  border-radius: 50%;
+  background: #C4C4C4;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.profile__upload input[type="file"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+  display: block;
+}
+
+.profile__upload.has-image {
+  background: none;
+}
+
+.profile__upload.has-image .profile__preview {
+  display: block;
+}
+
+.profile__upload.has-image .profile__plus {
+  display: none;
+}
+
+.profile__preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+.profile__plus {
+  pointer-events: none;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+}
+
+.field--profile {
+  align-items: flex-start;
+}
+
+.field--profile .profile__upload {
+  margin-top: var(--s-2);
+  align-self: center;
+}
+
+/* Actions & Buttons */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  margin-top: var(--s-6);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 33px;
+  padding: 6px 10px;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: var(--fs-14);
+}
+
+.btn--primary {
+  background: var(--primary);
+  color: #000;
+}
+
+.btn--primary:disabled,
+.btn--primary[disabled] {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.btn--primary.is-active {
+  background: #7F6AEE;
+  color: #fff;
+}
+
+.btn--outline {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--line);
+}
+
+.btn--block {
+  width: 100%;
+}

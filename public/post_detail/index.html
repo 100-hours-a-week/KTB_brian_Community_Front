@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>게시글 상세 - 아무말 대잔치</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div class="app">
+    <header class="header header--with-back" role="banner">
+        <div class="header__inner">
+            <button class="icon-btn" type="button" aria-label="뒤로가기" data-btn-back>
+                <svg viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M10 1 L2 9 L10 17" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </button>
+            <h1 class="header__title">아무말 대잔치</h1>
+            <details class="user-menu">
+                <summary aria-label="사용자 메뉴 열기">
+                    <span class="avatar" data-avatar-menu>
+                        <img alt="사용자 아바타" data-avatar-preview />
+                    </span>
+                </summary>
+                <nav class="menu" aria-label="사용자 메뉴">
+                <a href="../mypage/index.html">회원정보수정</a>
+                <a href="../password/index.html">비밀번호수정</a>
+                <a href="#" data-logout>로그아웃</a>
+            </nav>
+        </details>
+        </div>
+    </header>
+
+    <main class="container" role="main">
+        <article class="post" aria-live="polite">
+            <header class="post__head">
+                <h2 class="post__title" data-post-title>제목을 불러오는 중...</h2>
+                <div class="post__meta">
+                    <div class="author">
+                        <span class="author__avatar" aria-hidden="true" data-author-avatar></span>
+                        <span class="author__name" data-author-name>작성자</span>
+                    </div>
+                    <time class="post__time" data-post-time></time>
+                    <div class="post__actions">
+                        <button class="chip chip--ghost" type="button" data-btn-edit>수정</button>
+                        <button class="chip chip--ghost danger" type="button" data-btn-delete>삭제</button>
+                    </div>
+                </div>
+            </header>
+
+            <figure class="post__media" data-post-media hidden>
+                <img alt="게시글 이미지" data-post-image />
+            </figure>
+
+            <div class="post__body" data-post-body>불러오는 중...</div>
+
+            <section class="post__stats">
+                <button class="stat stat--like" type="button" data-like-btn aria-pressed="false">
+                    <span class="stat__num" data-like-count>0</span>
+                    <span class="stat__label">좋아요</span>
+                </button>
+                <div class="stat">
+                    <span class="stat__num" data-view-count>0</span>
+                    <span class="stat__label">조회수</span>
+                </div>
+                <div class="stat">
+                    <span class="stat__num" data-comment-count>0</span>
+                    <span class="stat__label">댓글</span>
+                </div>
+            </section>
+
+            <section class="comment-write" aria-label="댓글 작성">
+                <label class="sr-only" for="commentInput">댓글을 남겨주세요</label>
+                <textarea id="commentInput" class="comment-write__input" placeholder="댓글을 남겨주세요!" data-comment-input></textarea>
+                <div class="comment-write__actions">
+                    <button class="btn btn--primary" type="button" data-comment-submit disabled>댓글 등록</button>
+                </div>
+            </section>
+
+            <section class="comments" aria-label="댓글 목록" data-comment-list></section>
+            <p class="comments__empty" data-comment-empty hidden>아직 댓글이 없습니다.</p>
+        </article>
+    </main>
+</div>
+
+<template id="comment-item-template">
+    <article class="comment comment--card" data-comment-id="">
+        <div class="comment__meta">
+            <span class="author__avatar" aria-hidden="true"></span>
+            <span class="author__name"></span>
+            <time class="comment__time"></time>
+        </div>
+        <div class="comment__body"></div>
+        <div class="comment__actions">
+            <button class="chip chip--ghost" type="button" data-action="edit">수정</button>
+            <button class="chip chip--ghost danger" type="button" data-action="delete">삭제</button>
+        </div>
+    </article>
+</template>
+
+
+<!-- 모달(공통) :: 게시글 삭제 -->
+<div class="modal" id="postDeleteModal" aria-hidden="true">
+    <div class="modal__backdrop"></div>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="postDelTitle">
+        <h4 class="modal__title" id="postDelTitle">게시글을 삭제하시겠습니까?</h4>
+        <p class="modal__desc">삭제한 내용은 복구 할 수 없습니다.</p>
+        <div class="modal__actions">
+            <button class="btn btn--dark" data-close>취소</button>
+            <button class="btn btn--primary" id="postDeleteConfirm">확인</button>
+        </div>
+    </div>
+</div>
+
+<!-- 모달(공통) :: 댓글 삭제 -->
+<div class="modal" id="commentDeleteModal" aria-hidden="true">
+    <div class="modal__backdrop"></div>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="cmtDelTitle">
+        <h4 class="modal__title" id="cmtDelTitle">댓글을 삭제하시겠습니까?</h4>
+        <p class="modal__desc">삭제한 내용은 복구 할 수 없습니다.</p>
+        <div class="modal__actions">
+            <button class="btn btn--dark" data-close>취소</button>
+            <button class="btn btn--primary" id="commentDeleteConfirm">확인</button>
+        </div>
+    </div>
+</div>
+
+  <script type="module" src="./js/main.js"></script>
+  <script src="../shared/logout.js" defer></script>
+</body>
+</html>
