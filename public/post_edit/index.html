@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>게시글 수정 - 아무말 대잔치</title>
+    <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<div class="app">
+    <header class="header header--with-back" role="banner">
+        <div class="header__inner">
+            <button class="icon-btn" type="button" aria-label="뒤로가기" data-btn-back>
+                <svg viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M10 1 L2 9 L10 17" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+            <h1 class="header__title">아무말 대잔치</h1>
+            <details class="user-menu">
+                <summary aria-label="사용자 메뉴 열기">
+                    <span class="avatar" data-avatar-menu>
+                        <img alt="사용자 아바타" data-avatar-preview />
+                    </span>
+                </summary>
+                <nav class="menu" aria-label="사용자 메뉴">
+                    <a href="../mypage/index.html">회원정보수정</a>
+                    <a href="#">비밀번호수정</a>
+                    <a href="#" data-logout>로그아웃</a>
+                </nav>
+            </details>
+        </div>
+    </header>
+
+    <main class="container" role="main">
+        <h2 class="page-title">게시글 수정</h2>
+        <form class="form" id="post-form" novalidate>
+            <div class="field" id="field-title">
+                <label class="field__label" for="title">제목*</label>
+                <input class="field__input" id="title" name="title" type="text" maxlength="26" placeholder="제목을 입력해주세요. (최대 26글자)" required />
+                <p class="field__helper" id="title-help"></p>
+            </div>
+
+            <div class="field" id="field-body">
+                <label class="field__label" for="body">내용*</label>
+                <textarea class="field__textarea" id="body" name="body" rows="8" placeholder="내용을 입력해주세요." required></textarea>
+                <p class="field__helper" id="body-help"></p>
+            </div>
+
+            <div class="field" id="field-image">
+                <label class="field__label" for="image">이미지</label>
+                <input class="field__input" type="file" id="image" name="image" accept="image/*" />
+                <p class="field__helper" id="image-help"></p>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn--primary btn--block" id="submit-btn" type="submit" disabled>수정하기</button>
+            </div>
+        </form>
+    </main>
+</div>
+
+<script type="module" src="./js/main.js"></script>
+<script src="../shared/logout.js" defer></script>
+</body>
+</html>
