@@ -42,3 +42,9 @@ export function normalizeCommentsResponse(json) {
 export function convertNewLinesToBreaks(text = '') {
   return (text || '').replace(/\n/g, '<br />');
 }
+
+export function formatCount(count) {
+  const n = Number(count) || 0;
+  if (n >= 1000) return `${Math.floor(n / 1000)}k`;
+  return String(n);
+}

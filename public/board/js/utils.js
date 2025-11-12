@@ -31,3 +31,9 @@ export function normalizePostsResponse(json) {
 
   return { list, meta };
 }
+
+export function formatCount(n){
+  const x = Number(n)||0;
+  if(x>=1000)   return `${Math.floor(x/1000)}k`;
+  return String(x);
+}

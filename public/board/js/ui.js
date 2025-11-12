@@ -1,5 +1,5 @@
 import { DOM } from './dom.js';
-import { formatDateTime } from './utils.js';
+import { formatDateTime, formatCount } from './utils.js';
 
 const FALLBACK_AVATAR =
   'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72"><g fill="none" fill-rule="evenodd"><circle cx="36" cy="36" r="36" fill="%23E2E2E2"/><circle cx="36" cy="28" r="14" fill="%23BDBDBD"/><path d="M12 62c5-12 14-18 24-18s19 6 24 18" fill="%23BDBDBD"/></g></svg>';
@@ -52,9 +52,9 @@ export function renderPosts(posts, { requestAvatar } = {}) {
         : '';
     }
 
-    if (likesEl) likesEl.textContent = `좋아요 ${post.likeCount ?? 0}`;
-    if (commentsEl) commentsEl.textContent = `댓글 ${post.commentCount ?? 0}`;
-    if (viewsEl) viewsEl.textContent = `조회수 ${post.viewCount ?? 0}`;
+    if (likesEl) likesEl.textContent = `좋아요 ${formatCount(post.likeCount ?? 0)}`;
+    if (commentsEl) commentsEl.textContent = `댓글 ${formatCount(post.commentCount ?? 0)}`;
+    if (viewsEl) viewsEl.textContent = `조회수 ${formatCount(post.viewCount ?? 0)}`;
 
     const authorName = author.nickname || '익명';
     if (authorEl) authorEl.textContent = authorName;

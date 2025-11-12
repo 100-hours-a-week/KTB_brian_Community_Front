@@ -1,5 +1,5 @@
 import { DOM } from './dom.js';
-import { convertNewLinesToBreaks, formatDateTime } from './utils.js';
+import { convertNewLinesToBreaks, formatDateTime, formatCount } from './utils.js';
 
 const FALLBACK_AVATAR =
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><g fill="none" fill-rule="evenodd"><circle cx="24" cy="24" r="24" fill="%23E2E2E2"/><circle cx="24" cy="18" r="10" fill="%23BDBDBD"/><path d="M8 40c3.556-8.5 10.222-12.75 20-12.75S44 31.5 48 40" fill="%23BDBDBD"/></g></svg>';
@@ -39,14 +39,14 @@ export function setPostImage(src) {
 
 export function setCounts({ likes, views, comments }) {
     if (DOM.likeCount) {
-        DOM.likeCount.textContent = String(likes ?? 0);
+        DOM.likeCount.textContent = formatCount(likes ?? 0);
         DOM.likeCount.dataset.count = String(likes ?? 0);
     }
     if (DOM.viewCount) {
-        DOM.viewCount.textContent = String(views ?? 0);
+        DOM.viewCount.textContent = formatCount(views ?? 0);
     }
     if (DOM.commentCount) {
-        DOM.commentCount.textContent = String(comments ?? 0);
+        DOM.commentCount.textContent = formatCount(comments ?? 0);
     }
 }
 
