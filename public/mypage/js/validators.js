@@ -5,6 +5,7 @@ import {
   withinLen,
   validateNicknameValue,
 } from '../../shared/validators.js';
+import { checkNickDup } from './availability.js';
 
 export function validateNickname({ showMsg = false } = {}) {
   const value = DOM.nicknameInput?.value || '';
@@ -24,4 +25,35 @@ export function validateNickname({ showMsg = false } = {}) {
     setFieldHelper(DOM.nicknameField, DOM.nicknameHelper, null, null);
   }
   return true;
+}
+
+export function validateNicknameAsyncDup(onDone) {
+  const value = (DOM.nicknameInput?.value || '').trim();
+  if (!value) {
+    onDone?.();
+    return;
+  }
+  checkNickDup(value, (res) => {
+    if (!res.ok) {
+      setFieldHelper(
+        DOM.nicknameField,
+        DOM.nicknameHelper,
+        '닉네임 중복 확인에 실패했습니다. 잠시 후 다시 시도해주세요.',
+        'warn',
+      );
+      onDone?.();
+      return;
+    }
+    if (res.duplicate) {
+      setFieldHelper(
+        DOM.nicknameField,
+        DOM.nicknameHelper,
+        '*중복된 닉네임입니다.',
+        'error',
+      );
+    } else {
+      setFieldHelper(DOM.nicknameField, DOM.nicknameHelper, null, null);
+    }
+    onDone?.();
+  });
 }

@@ -2,7 +2,7 @@ import { initAvatarSync } from '../../shared/avatar-sync.js';
 import { fetchCurrentUser, fetchUserImage, updateUserProfile, deleteCurrentUser } from './api.js';
 import { DOM } from './dom.js';
 import { setFieldHelper } from './ui.js';
-import { validateNickname } from './validators.js';
+import { validateNickname, validateNicknameAsyncDup } from './validators.js';
 
 const state = {
   originalNickname: '',
@@ -130,12 +130,16 @@ async function handleSubmit(e) {
 function bindEvents() {
   if (DOM.form) DOM.form.addEventListener('submit', handleSubmit);
   if (DOM.nicknameInput) {
-    DOM.nicknameInput.addEventListener('blur', () =>
-      validateNickname({ showMsg: true }),
-    );
-    DOM.nicknameInput.addEventListener('input', () =>
-      validateNickname({ showMsg: false }),
-    );
+    DOM.nicknameInput.addEventListener('blur', () => {
+      if (validateNickname({ showMsg: true })) {
+        validateNicknameAsyncDup(() => {});
+      }
+    });
+    DOM.nicknameInput.addEventListener('input', () => {
+      if (validateNickname({ showMsg: false })) {
+        validateNicknameAsyncDup(() => {});
+      }
+    });
   }
   DOM.deleteConfirmBtn?.addEventListener('click', handleDeleteAccount);
 }
