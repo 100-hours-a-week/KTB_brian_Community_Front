@@ -39,6 +39,7 @@ const state = {
   postImageUrl: null,
   authorAvatarUrl: null,
   commentToDelete: null,
+  editingCommentId: null,
 };
 
 function openModal(modal) {
@@ -241,7 +242,13 @@ function bindCommentForm() {
     if (DOM.commentSubmit) DOM.commentSubmit.disabled = !hasText;
   };
   DOM.commentInput?.addEventListener('input', toggleState);
-  DOM.commentSubmit?.addEventListener('click', handleCommentSubmit);
+  DOM.commentSubmit?.addEventListener('click', () => {
+    if (state.editingCommentId) {
+      handleCommentUpdate(state.editingCommentId);
+    } else {
+      handleCommentSubmit();
+    }
+  });
 }
 
 async function handleCommentSubmit() {
@@ -275,6 +282,34 @@ async function handleCommentSubmit() {
   }
 }
 
+async function handleCommentUpdate(commentId) {
+  const content = DOM.commentInput?.value.trim();
+  if (!state.postId || !commentId || !content) return;
+  DOM.commentSubmit.disabled = true;
+  DOM.commentSubmit.textContent = '수정 중...';
+  try {
+    const res = await updateComment(state.postId, commentId, content);
+    if (res.status === 401) {
+      window.location.href = '../login/index.html';
+      return;
+    }
+    if (!res.ok) {
+      alert('댓글 수정에 실패했습니다.');
+      return;
+    }
+    DOM.commentInput.value = '';
+    state.editingCommentId = null;
+    DOM.commentSubmit.textContent = '댓글 등록';
+    await loadComments({ reset: true });
+  } catch (err) {
+    console.error(err);
+    alert('댓글 수정 중 오류가 발생했습니다.');
+  } finally {
+    DOM.commentSubmit.textContent = '댓글 등록';
+    DOM.commentSubmit.disabled = true;
+  }
+}
+
 function bindCommentActions() {
   DOM.commentList?.addEventListener('click', (e) => {
     const btn = e.target.closest('button[data-action]');
@@ -286,8 +321,8 @@ function bindCommentActions() {
 
     if (btn.dataset.action === 'edit') {
       startCommentEdit(commentEl, btn);
-    } else if (btn.dataset.action === 'save') {
-      saveCommentEdit(commentEl, btn, commentId);
+    } else if (btn.dataset.action === 'cancel-edit') {
+      cancelCommentEdit(commentEl, btn);
     } else if (btn.dataset.action === 'delete') {
       state.commentToDelete = { id: commentId, node: commentEl };
       openModal(DOM.commentDeleteModal);
@@ -296,49 +331,28 @@ function bindCommentActions() {
 }
 
 function startCommentEdit(commentEl, btn) {
-  if (commentEl.dataset.editing === 'true') return;
   const bodyEl = commentEl.querySelector('.comment__body');
-  if (!bodyEl) return;
-  const textarea = document.createElement('textarea');
-  textarea.className = 'comment-write__input';
-  textarea.value = bodyEl.textContent;
-  bodyEl.replaceWith(textarea);
-  btn.textContent = '저장';
-  btn.dataset.action = 'save';
-  commentEl.dataset.editing = 'true';
-  textarea.focus();
+  if (!bodyEl || !DOM.commentInput || !DOM.commentSubmit) return;
+  state.editingCommentId = commentEl.dataset.commentId || null;
+  DOM.commentInput.value = bodyEl.textContent || '';
+  DOM.commentSubmit.textContent = '댓글 수정';
+  DOM.commentSubmit.disabled = false;
+  commentEl.classList.add('is-editing');
+  DOM.commentInput.focus();
+  btn.textContent = '수정 취소';
+  btn.dataset.action = 'cancel-edit';
 }
 
-async function saveCommentEdit(commentEl, btn, commentId) {
-  const textarea = commentEl.querySelector('textarea');
-  if (!textarea) return;
-  const next = textarea.value.trim();
-  if (!next) {
-    alert('댓글 내용을 입력해주세요.');
-    textarea.focus();
-    return;
+function cancelCommentEdit(commentEl, btn) {
+  state.editingCommentId = null;
+  if (DOM.commentInput) DOM.commentInput.value = '';
+  if (DOM.commentSubmit) {
+    DOM.commentSubmit.textContent = '댓글 등록';
+    DOM.commentSubmit.disabled = true;
   }
-  btn.disabled = true;
-  try {
-    const res = await updateComment(state.postId, commentId, next);
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
-    if (!res.ok) throw new Error(`댓글 수정 실패 (${res.status})`);
-    const div = document.createElement('div');
-    div.className = 'comment__body';
-    div.textContent = next;
-    textarea.replaceWith(div);
-    btn.textContent = '수정';
-    btn.dataset.action = 'edit';
-    commentEl.dataset.editing = 'false';
-  } catch (err) {
-    console.error(err);
-    alert('댓글 수정 중 오류가 발생했습니다.');
-  } finally {
-    btn.disabled = false;
-  }
+  commentEl.classList.remove('is-editing');
+  btn.textContent = '수정';
+  btn.dataset.action = 'edit';
 }
 
 function bindCommentDeleteModal() {
