@@ -8,4 +8,5 @@ export const DOM = {
     document.querySelector('.form .btn.btn--primary[type="submit"]') ||
     document.querySelector('.form .btn.btn--primary'),
   fileInput: document.getElementById('profile-file-input'),
+  deleteConfirmBtn: document.querySelector('[data-delete-confirm]'),
 };

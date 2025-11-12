@@ -24,3 +24,11 @@ export function updateUserProfile(formData) {
     credentials: 'include',
   });
 }
+
+export function deleteCurrentUser() {
+  return fetch(USER_ME_URL, {
+    method: 'DELETE',
+    headers: authHeaders({ Accept: 'application/json' }),
+    credentials: 'include',
+  });
+}

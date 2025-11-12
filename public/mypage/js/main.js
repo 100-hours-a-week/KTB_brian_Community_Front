@@ -1,5 +1,5 @@
 import { initAvatarSync } from '../../shared/avatar-sync.js';
-import { fetchCurrentUser, fetchUserImage, updateUserProfile } from './api.js';
+import { fetchCurrentUser, fetchUserImage, updateUserProfile, deleteCurrentUser } from './api.js';
 import { DOM } from './dom.js';
 import { setFieldHelper } from './ui.js';
 import { validateNickname } from './validators.js';
@@ -137,6 +137,7 @@ function bindEvents() {
       validateNickname({ showMsg: false }),
     );
   }
+  DOM.deleteConfirmBtn?.addEventListener('click', handleDeleteAccount);
 }
 
 function bootMypage() {
@@ -164,4 +165,28 @@ function showToast() {
   setTimeout(() => {
     toast.classList.remove('is-visible');
   }, 2500);
+}
+
+async function handleDeleteAccount() {
+  try {
+    const res = await deleteCurrentUser();
+    if (res.status === 401) {
+      window.location.href = '../login/index.html';
+      return;
+    }
+    if (!res.ok && res.status !== 204) {
+      let msg = '회원 탈퇴에 실패했습니다.';
+      try {
+        const body = await res.json();
+        if (body && typeof body.message === 'string') msg = body.message;
+      } catch (_) {}
+      alert(msg);
+      return;
+    }
+    alert('회원 탈퇴가 완료되었습니다.');
+    window.location.href = '../login/index.html';
+  } catch (err) {
+    console.error('회원 탈퇴 오류', err);
+    alert('회원 탈퇴 중 오류가 발생했습니다.');
+  }
 }

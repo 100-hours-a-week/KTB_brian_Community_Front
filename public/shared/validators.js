@@ -31,3 +31,12 @@ export function hasWhitespace(value) {
 export function withinLen(value, max) {
   return (value || '').length <= max;
 }
+
+export function validateNicknameValue(value, { maxLength = 10 } = {}) {
+  const trimmed = (value || '').trim();
+  if (!trimmed) return { valid: false, reason: 'required' };
+  if (hasWhitespace(trimmed)) return { valid: false, reason: 'whitespace' };
+  if (!withinLen(trimmed, maxLength))
+    return { valid: false, reason: 'length', limit: maxLength };
+  return { valid: true, value: trimmed };
+}

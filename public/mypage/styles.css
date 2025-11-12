@@ -352,16 +352,7 @@ details.user-menu[open] .menu {
     justify-content: center;
 }
 
-.btn--dark {
-    background: #222;
-    color: #fff;
-    border: none;
-    border-radius: 20px;
-    height: 56px;
-    padding: 0 28px;
-    font-size: var(--fs-20);
-}
-
+.btn--dark,
 .btn--confirm {
     background: #B9A9F0;
     color: #000;
@@ -370,6 +361,10 @@ details.user-menu[open] .menu {
     height: 56px;
     padding: 0 28px;
     font-size: var(--fs-20);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* target 활성화 */
