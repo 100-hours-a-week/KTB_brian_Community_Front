@@ -119,7 +119,7 @@ async function handleSubmit(e) {
     }
 
     alert('회원가입이 완료되었습니다!');
-    // window.location.href = '/login';
+    window.location.href = '../login/index.html';
 
   } catch (err) {
     alert('네트워크 오류가 발생했습니다. 연결 상태를 확인해주세요.');
