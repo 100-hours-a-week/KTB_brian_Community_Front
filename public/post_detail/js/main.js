@@ -390,9 +390,12 @@ async function handleCommentDeleteConfirm() {
 }
 
 function bindPostActions() {
-  DOM.editBtn?.addEventListener('click', () =>
-    alert('게시글 수정 기능이 준비 중입니다.'),
-  );
+  DOM.editBtn?.addEventListener('click', () => {
+    if (!state.postId) return;
+    window.location.href = `../post_edit/index.html?postId=${encodeURIComponent(
+      state.postId,
+    )}`;
+  });
   if (DOM.deleteBtn) {
     DOM.deleteBtn.addEventListener('click', () => openModal(DOM.postDeleteModal));
   }
