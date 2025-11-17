@@ -1,4 +1,4 @@
-import { USER_DOMAIN_URL } from './config.js';
+import { USER_DOMAIN_URL } from '../../shared/config/config.js';
 
 // 회원가입 전송 (FormData)
 export async function submitSignIn(fd) {

@@ -1,4 +1,4 @@
-import { USER_AVAILABILITY_URL } from './config.js';
+import { USER_AVAILABILITY_URL } from '../../shared/config/config.js';
 
 function makeAvailabilityChecker(paramKey) {
   let timer = null;

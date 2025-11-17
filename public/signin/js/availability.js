@@ -1,5 +1,5 @@
 // 이메일/닉네임 중복 확인 (디바운스 + Abort + 409 처리)
-import { USER_AVAILABILITY_URL } from './config.js';
+import { USER_AVAILABILITY_URL } from '../../shared/config/config.js';
 
 function makeAvailabilityChecker(paramKey) {
   let timer = null;

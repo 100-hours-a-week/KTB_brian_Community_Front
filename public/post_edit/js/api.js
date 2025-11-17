@@ -1,4 +1,4 @@
-import { POSTS_URL } from './config.js';
+import { POSTS_URL } from '../../shared/config/config.js';
 import { authHeaders } from '../../login/js/api.js';
 
 export function fetchPost(postId) {

@@ -3,7 +3,7 @@ import {
   postCommentsUrl,
   postDetailUrl,
   postLikeUrl,
-} from './config.js';
+} from '../../shared/config/config.js';
 import { authHeaders } from '../../login/js/api.js';
 
 const DEFAULT_JSON_HEADERS = {

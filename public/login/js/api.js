@@ -1,5 +1,5 @@
 // api.js
-import { LOGIN_URL } from './config.js';
+import { LOGIN_URL } from '../../shared/config/config.js';
 import { jsonFetch, getCookie } from './utils.js';
 
 export async function loginRequest({ email, password }) {
