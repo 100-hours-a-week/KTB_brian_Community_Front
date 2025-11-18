@@ -1,10 +1,24 @@
 import { DOM } from './dom.js';
-import { updateSubmitState, showToast } from './ui.js';
-import { validatePassword, validatePasswordConfirm } from './validators.js';
+import { updateSubmitState, showToast, setFieldHelper } from './ui.js';
+import { makePasswordValidator, makePasswordConfirmValidator } from '../../shared/validators.js';
 import { updatePassword } from '../../shared/api/user.js';
 import { fetchImageWithAuth } from '../../shared/api/post.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
 import { fetchCurrentUser } from '../../shared/api/user.js';
+
+const validatePassword = makePasswordValidator({
+  inputEl: DOM.passwordInput,
+  fieldEl: DOM.passwordField,
+  helpEl: DOM.passwordHelper,
+  setHelper: setFieldHelper,
+});
+const validatePasswordConfirm = makePasswordConfirmValidator({
+  passwordInputEl: DOM.passwordInput,
+  confirmInputEl: DOM.confirmInput,
+  fieldEl: DOM.confirmField,
+  helpEl: DOM.confirmHelper,
+  setHelper: setFieldHelper,
+});
 
 function isAllValid() {
   const okPass = validatePassword({ showMsg: false });

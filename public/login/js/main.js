@@ -1,9 +1,22 @@
 // main.js
 import { DOM } from './dom.js';
 import { updateSubmitState, hasAnyFieldError, setFieldHelper } from './ui.js';
-import { validateEmail, validatePassword } from './validators.js';
+import { makeEmailValidator, makePasswordValidator } from '../../shared/validators.js';
 import { loginRequest } from '../../shared/api/auth.js';
 import { setCookie } from './utils.js';
+
+const validateEmail = makeEmailValidator({
+  inputEl: DOM.inputEmail,
+  fieldEl: DOM.fieldEmail,
+  helpEl: DOM.helpEmail,
+  setHelper: setFieldHelper,
+});
+const validatePassword = makePasswordValidator({
+  inputEl: DOM.inputPw,
+  fieldEl: DOM.fieldPw,
+  helpEl: DOM.helpPw,
+  setHelper: setFieldHelper,
+});
 
 function isAllValidSync(){
   const okEmail = validateEmail({ showMsg:false });

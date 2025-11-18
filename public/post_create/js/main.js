@@ -1,6 +1,6 @@
 import { DOM } from './dom.js';
-import { updateSubmitState } from './ui.js';
-import { validateTitle, validateBody } from './validators.js';
+import { updateSubmitState, setFieldHelper } from './ui.js';
+import { makeTitleValidator, makeBodyValidator } from '../../shared/validators.js';
 import { createPost, fetchImageWithAuth } from '../../shared/api/post.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
 import { fetchCurrentUser } from '../../shared/api/user.js';
@@ -8,6 +8,19 @@ import { fetchCurrentUser } from '../../shared/api/user.js';
 const state = {
   avatarController: null,
 };
+
+const validateTitle = makeTitleValidator({
+  inputEl: DOM.titleInput,
+  fieldEl: DOM.titleField,
+  helpEl: DOM.titleHelper,
+  setHelper: setFieldHelper,
+});
+const validateBody = makeBodyValidator({
+  inputEl: DOM.bodyInput,
+  fieldEl: DOM.bodyField,
+  helpEl: DOM.bodyHelper,
+  setHelper: setFieldHelper,
+});
 
 function isAllValid() {
   const okTitle = validateTitle({ showMsg: false });

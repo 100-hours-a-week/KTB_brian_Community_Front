@@ -2,12 +2,51 @@ import { initAvatarSync } from '../../shared/avatar-sync.js';
 import { fetchCurrentUser, fetchUserImage, updateUserProfile, deleteCurrentUser } from '../../shared/api/user.js';
 import { DOM } from './dom.js';
 import { setFieldHelper } from './ui.js';
-import { validateNickname, validateNicknameAsyncDup } from './validators.js';
+import { makeNicknameValidator } from '../../shared/validators.js';
+import { checkNickDup } from './availability.js';
 
 const state = {
   originalNickname: '',
   avatarController: null,
 };
+
+const validateNickname = makeNicknameValidator({
+  inputEl: DOM.nicknameInput,
+  fieldEl: DOM.nicknameField,
+  helpEl: DOM.nicknameHelper,
+  setHelper: setFieldHelper,
+});
+
+function validateNicknameAsyncDup(onDone) {
+  const value = (DOM.nicknameInput?.value || '').trim();
+  if (!value) {
+    onDone?.();
+    return;
+  }
+  checkNickDup(value, (res) => {
+    if (!res.ok) {
+      setFieldHelper(
+        DOM.nicknameField,
+        DOM.nicknameHelper,
+        '닉네임 중복 확인에 실패했습니다. 잠시 후 다시 시도해주세요.',
+        'warn',
+      );
+      onDone?.();
+      return;
+    }
+    if (res.duplicate) {
+      setFieldHelper(
+        DOM.nicknameField,
+        DOM.nicknameHelper,
+        '*중복된 닉네임입니다.',
+        'error',
+      );
+    } else {
+      setFieldHelper(DOM.nicknameField, DOM.nicknameHelper, null, null);
+    }
+    onDone?.();
+  });
+}
 
 async function loadRemoteAvatar(imageUrl) {
   if (!imageUrl || !state.avatarController) return;

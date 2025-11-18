@@ -1,13 +1,83 @@
 import { DOM } from './dom.js';
 import { buildFormData } from './utils.js';
 import { updateSubmitState, hasAnyFieldError, setFieldHelper, setProfileHelper } from './ui.js';
+import { checkEmailDup, checkNickDup } from './availability.js';
 import {
-  validateProfile,
-  validateEmailSync, validateEmailAsyncDup,
-  validatePasswordSync, validatePassword2Sync,
-  validateNicknameSync, validateNicknameAsyncDup
-} from './validators.js';
+  makeProfileValidator,
+  makeEmailValidator,
+  makePasswordValidator,
+  makePasswordConfirmValidator,
+  makeNicknameValidator,
+} from '../../shared/validators.js';
 import { submitSignIn } from '../../shared/api/user.js';
+
+const validateProfile = makeProfileValidator({
+  hasImageFn: () => DOM.profileWrap.classList.contains('has-image'),
+  setProfileHelper,
+});
+const validateEmailSync = makeEmailValidator({
+  inputEl: DOM.inputEmail,
+  fieldEl: DOM.fieldEmail,
+  helpEl: DOM.helpEmail,
+  setHelper: setFieldHelper,
+});
+const validatePasswordSync = makePasswordValidator({
+  inputEl: DOM.inputPw,
+  fieldEl: DOM.fieldPw,
+  helpEl: DOM.helpPw,
+  setHelper: setFieldHelper,
+});
+const validatePassword2Sync = makePasswordConfirmValidator({
+  passwordInputEl: DOM.inputPw,
+  confirmInputEl: DOM.inputPw2,
+  fieldEl: DOM.fieldPw2,
+  helpEl: DOM.helpPw2,
+  setHelper: setFieldHelper,
+});
+const validateNicknameSync = makeNicknameValidator({
+  inputEl: DOM.inputNick,
+  fieldEl: DOM.fieldNick,
+  helpEl: DOM.helpNick,
+  setHelper: setFieldHelper,
+});
+
+function validateEmailAsyncDup(onDone) {
+  const v = (DOM.inputEmail.value || '').trim();
+  checkEmailDup(v, (res) => {
+    if (!res.ok) {
+      setFieldHelper(
+        DOM.fieldEmail,
+        DOM.helpEmail,
+        '이메일 중복 확인에 실패했습니다. 잠시 후 다시 시도해주세요.',
+        'warn',
+      );
+      onDone?.();
+      return;
+    }
+    if (res.duplicate) setFieldHelper(DOM.fieldEmail, DOM.helpEmail, '*중복된 이메일입니다.', 'error');
+    else setFieldHelper(DOM.fieldEmail, DOM.helpEmail, null, null);
+    onDone?.();
+  });
+}
+
+function validateNicknameAsyncDup(onDone) {
+  const v = DOM.inputNick.value || '';
+  checkNickDup(v, (res) => {
+    if (!res.ok) {
+      setFieldHelper(
+        DOM.fieldNick,
+        DOM.helpNick,
+        '닉네임 중복 확인에 실패했습니다. 잠시 후 다시 시도해주세요.',
+        'warn',
+      );
+      onDone?.();
+      return;
+    }
+    if (res.duplicate) setFieldHelper(DOM.fieldNick, DOM.helpNick, '*중복된 닉네임입니다.', 'error');
+    else setFieldHelper(DOM.fieldNick, DOM.helpNick, null, null);
+    onDone?.();
+  });
+}
 
 function isAllValidSync() {
   const okProfile = DOM.profileWrap.classList.contains('has-image');
