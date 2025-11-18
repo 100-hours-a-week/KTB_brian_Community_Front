@@ -10,7 +10,7 @@ import {
   makeNicknameValidator,
 } from '../../shared/validators.js';
 import { submitSignIn } from '../../shared/api/user.js';
-import { MSG } from '../../shared/constants/messages.js';
+import { MSG, ERR } from '../../shared/constants/messages.js';
 
 const validateProfile = makeProfileValidator({
   hasImageFn: () => DOM.profileWrap.classList.contains('has-image'),
@@ -49,13 +49,13 @@ function validateEmailAsyncDup(onDone) {
       setFieldHelper(
         DOM.fieldEmail,
         DOM.helpEmail,
-        MSG.DUP_EMAIL_FAIL,
+        ERR.DUP_EMAIL_FAIL,
         'warn',
       );
       onDone?.();
       return;
     }
-    if (res.duplicate) setFieldHelper(DOM.fieldEmail, DOM.helpEmail, MSG.DUP_EMAIL, 'error');
+    if (res.duplicate) setFieldHelper(DOM.fieldEmail, DOM.helpEmail, ERR.DUP_EMAIL, 'error');
     else setFieldHelper(DOM.fieldEmail, DOM.helpEmail, null, null);
     onDone?.();
   });
@@ -68,13 +68,13 @@ function validateNicknameAsyncDup(onDone) {
       setFieldHelper(
         DOM.fieldNick,
         DOM.helpNick,
-        MSG.DUP_NICK_FAIL,
+        ERR.DUP_NICK_FAIL,
         'warn',
       );
       onDone?.();
       return;
     }
-    if (res.duplicate) setFieldHelper(DOM.fieldNick, DOM.helpNick, MSG.DUP_NICK, 'error');
+    if (res.duplicate) setFieldHelper(DOM.fieldNick, DOM.helpNick, ERR.DUP_NICK, 'error');
     else setFieldHelper(DOM.fieldNick, DOM.helpNick, null, null);
     onDone?.();
   });
@@ -168,19 +168,19 @@ async function handleSubmit(e) {
     const res = await submitSignIn(fd);
 
     if (res.status === 409) {
-      let msg = MSG.DUP_INFO_DEFAULT;
+      let msg = ERR.DUP_INFO_DEFAULT;
       try {
         const data = await res.json();
         if (data && typeof data.message === 'string') msg = data.message;
       } catch {}
       // 기본: 이메일 중복으로 표시
-      setFieldHelper(DOM.fieldEmail, DOM.helpEmail, MSG.DUP_EMAIL, 'error');
+      setFieldHelper(DOM.fieldEmail, DOM.helpEmail, ERR.DUP_EMAIL, 'error');
       updateSubmitState(isAllValidSync);
       return;
     }
 
     if (!res.ok) {
-      let errMsg = MSG.REQUEST_RETRY;
+      let errMsg = ERR.REQUEST_RETRY;
       try {
         const data = await res.json();
         if (data && typeof data.message === 'string') errMsg = data.message;
@@ -193,7 +193,7 @@ async function handleSubmit(e) {
     window.location.href = '../login/index.html';
 
   } catch (err) {
-    alert(MSG.NETWORK_ERROR);
+    alert(ERR.NETWORK);
   } finally {
     DOM.btn.textContent = originalText;
     updateSubmitState(isAllValidSync);

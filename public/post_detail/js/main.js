@@ -28,7 +28,7 @@ import {
 import { initAvatarSync } from '../../shared/avatar-sync.js';
 import { fetchCurrentUser } from '../../shared/api/user.js';
 import { redirectToLogin } from '../../shared/utils/navigation.js';
-import { MSG } from '../../shared/constants/messages.js';
+import { MSG, ERR } from '../../shared/constants/messages.js';
 
 const state = {
   postId: null,
@@ -84,11 +84,11 @@ async function loadPost() {
   try {
     const res = await fetchPost(state.postId);
     if (res.status === 404) {
-      alert(MSG.POST_NOT_FOUND);
+      alert(ERR.POST_NOT_FOUND);
       redirectToBoard();
       return;
     }
-    if (!res.ok) throw new Error(`게시글 정보를 불러올 수 없습니다. (${res.status})`);
+    if (!res.ok) throw new Error(`${ERR.POST_FETCH} (${res.status})`);
     const json = await res.json();
     const data = normalizePostResponse(json);
     state.post = data.post ?? data ?? {};
@@ -105,7 +105,7 @@ async function loadPost() {
     }
   } catch (err) {
     console.error(err);
-    alert(MSG.POST_FETCH_FAIL);
+    alert(ERR.POST_FETCH_FAIL);
     redirectToBoard();
   }
 }
@@ -118,13 +118,13 @@ async function hydratePostImage(imageUrl) {
   }
   try {
     const res = await fetchImageWithAuth(imageUrl);
-    if (!res.ok) throw new Error(MSG.POST_IMAGE_FAIL);
+    if (!res.ok) throw new Error(ERR.POST_IMAGE_RESPONSE);
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     state.postImageUrl = url;
     setPostImage(url);
   } catch (err) {
-    console.warn(MSG.POST_IMAGE_FAIL, err);
+    console.warn(ERR.POST_IMAGE_RESPONSE, err);
     setPostImage(imageUrl);
   }
 }
@@ -137,13 +137,13 @@ async function hydrateAuthorAvatar(imageUrl) {
   }
   try {
     const res = await fetchImageWithAuth(imageUrl);
-    if (!res.ok) throw new Error(MSG.AUTHOR_IMAGE_FAIL);
+    if (!res.ok) throw new Error(ERR.AUTHOR_IMAGE_RESPONSE);
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     state.authorAvatarUrl = url;
     setAuthorAvatar(url);
   } catch (err) {
-    console.warn(MSG.AUTHOR_IMAGE_FAIL, err);
+    console.warn(ERR.AUTHOR_IMAGE_RESPONSE, err);
     setAuthorAvatar(imageUrl);
   }
 }
@@ -162,7 +162,7 @@ async function loadComments({ reset = true } = {}) {
       page: state.commentsPage,
       size: 20,
     });
-      if (!res.ok) throw new Error(`${MSG.COMMENT_FETCH_FAIL} (${res.status})`);
+      if (!res.ok) throw new Error(`${ERR.COMMENT_FETCH} (${res.status})`);
     const json = await res.json();
     const { list, meta } = normalizeCommentsResponse(json);
     if (state.commentsPage === 0) renderComments(list);
@@ -206,7 +206,7 @@ async function hydrateLikeState() {
     state.likeLiked = liked;
     setLikeState(liked);
   } catch (err) {
-    console.warn(MSG.LIKE_STATUS_FAIL, err);
+    console.warn(ERR.LIKE_STATUS_FAIL, err);
   }
 }
 
@@ -216,7 +216,7 @@ function bindLikeButton() {
     try {
       const res = await togglePostLike(state.postId);
       if (res.status === 401) return redirectToLogin();
-      if (!res.ok) throw new Error(`좋아요 처리 실패 (${res.status})`);
+      if (!res.ok) throw new Error(`${ERR.LIKE_PROCESS} (${res.status})`);
       state.likeLiked = !state.likeLiked;
       setLikeState(state.likeLiked);
       if (state.post) {
@@ -230,7 +230,7 @@ function bindLikeButton() {
       }
     } catch (err) {
       console.error(err);
-      alert(MSG.LIKE_TOGGLE_FAIL);
+      alert(ERR.LIKE_TOGGLE_FAIL);
     }
   });
 }
@@ -259,7 +259,7 @@ async function handleCommentSubmit() {
     const res = await createComment(state.postId, content);
     if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
-      let message = MSG.COMMENT_CREATE_FAIL;
+      let message = ERR.COMMENT_CREATE_FAIL;
       try {
         const data = await res.json();
         if (data && typeof data.message === 'string') message = data.message;
@@ -271,7 +271,7 @@ async function handleCommentSubmit() {
     await loadComments({ reset: true });
   } catch (err) {
     console.error(err);
-    alert(MSG.COMMENT_CREATE_ERROR);
+    alert(ERR.COMMENT_CREATE_ERROR);
   } finally {
     DOM.commentSubmit.textContent = MSG.COMMENT_SUBMIT_LABEL;
     DOM.commentSubmit.disabled = true;
@@ -287,7 +287,7 @@ async function handleCommentUpdate(commentId) {
     const res = await updateComment(state.postId, commentId, content);
     if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
-      alert(MSG.COMMENT_UPDATE_FAIL);
+      alert(ERR.COMMENT_UPDATE_FAIL);
       return;
     }
     DOM.commentInput.value = '';
@@ -296,7 +296,7 @@ async function handleCommentUpdate(commentId) {
     await loadComments({ reset: true });
   } catch (err) {
     console.error(err);
-    alert(MSG.COMMENT_UPDATE_ERROR);
+    alert(ERR.COMMENT_UPDATE_ERROR);
   } finally {
     DOM.commentSubmit.textContent = MSG.COMMENT_SUBMIT_LABEL;
     DOM.commentSubmit.disabled = true;
@@ -368,7 +368,7 @@ async function handleCommentDeleteConfirm() {
     const res = await deleteComment(state.postId, id);
     if (res.status === 401) return redirectToLogin();
     if (!res.ok && res.status !== 204)
-      throw new Error(`댓글 삭제 실패 (${res.status})`);
+      throw new Error(`${ERR.COMMENT_DELETE} (${res.status})`);
     node?.remove();
     if (state.post) {
       state.post.commentCount = Math.max(
@@ -386,7 +386,7 @@ async function handleCommentDeleteConfirm() {
     setCommentEmptyState(!hasComments);
   } catch (err) {
     console.error(err);
-    alert(MSG.COMMENT_DELETE_ERROR);
+    alert(ERR.COMMENT_DELETE_ERROR);
   } finally {
     state.commentToDelete = null;
     closeModal(DOM.commentDeleteModal);
@@ -413,12 +413,12 @@ async function handlePostDeleteConfirm() {
     const res = await deletePost(state.postId);
     if (res.status === 401) return redirectToLogin();
     if (!res.ok && res.status !== 204)
-      throw new Error(`게시글 삭제 실패 (${res.status})`);
+      throw new Error(`${ERR.POST_DELETE} (${res.status})`);
     alert(MSG.POST_DELETE_SUCCESS);
     redirectToBoard();
   } catch (err) {
     console.error(err);
-    alert(MSG.POST_DELETE_ERROR);
+    alert(ERR.POST_DELETE_ERROR);
   } finally {
     closeModal(DOM.postDeleteModal);
   }
@@ -437,18 +437,18 @@ async function hydrateHeaderAvatar() {
   try {
     const res = await fetchCurrentUser();
     if (res.status === 401) return redirectToLogin();
-    if (!res.ok) throw new Error(MSG.USER_FETCH_FAIL);
+    if (!res.ok) throw new Error(`${ERR.USER_FETCH} (${res.status})`);
     const payload = await res.json();
     const user = payload?.data ?? payload ?? {};
     if (user.imageUrl) {
       try {
         const resImg = await fetchImageWithAuth(user.imageUrl);
-        if (!resImg.ok) throw new Error(MSG.AVATAR_IMAGE_FAIL);
+        if (!resImg.ok) throw new Error(ERR.AVATAR_IMAGE_RESPONSE);
         const blob = await resImg.blob();
         const url = URL.createObjectURL(blob);
         state.headerAvatarController.setAvatar(url, { track: 'external' });
       } catch (imgErr) {
-        console.warn(MSG.AVATAR_LOAD_FAIL, imgErr);
+        console.warn(ERR.AVATAR_LOAD_FAIL, imgErr);
       }
     } else {
       state.headerAvatarController.setAvatar(null);
@@ -477,7 +477,7 @@ async function initPage() {
 
   const postId = getQueryParam('postId');
   if (!postId) {
-    alert(MSG.INVALID_ACCESS);
+    alert(ERR.INVALID_ACCESS);
     redirectToBoard();
     return;
   }

@@ -4,7 +4,7 @@ import { updateSubmitState, hasAnyFieldError, setFieldHelper } from './ui.js';
 import { makeEmailValidator, makePasswordValidator } from '../../shared/validators.js';
 import { loginRequest } from '../../shared/api/auth.js';
 import { setCookie } from './utils.js';
-import { MSG } from '../../shared/constants/messages.js';
+import { MSG, ERR } from '../../shared/constants/messages.js';
 
 const validateEmail = makeEmailValidator({
   inputEl: DOM.inputEmail,
@@ -50,7 +50,7 @@ async function handleSubmit(e){
     const res = await loginRequest({ email: DOM.inputEmail.value, password: DOM.inputPw.value });
 
     if(!res.ok){
-      setFieldHelper(DOM.fieldPw, DOM.helpPw, MSG.INVALID_CREDENTIALS, 'error');
+      setFieldHelper(DOM.fieldPw, DOM.helpPw, ERR.INVALID_CREDENTIALS, 'error');
       updateSubmitState(DOM.btn, isAllValidSync);
       return;
     }
@@ -70,7 +70,7 @@ async function handleSubmit(e){
     window.location.href = '../board/index.html';
 
   }catch(err){
-    alert(MSG.NETWORK_ERROR);
+    alert(ERR.NETWORK);
   }finally{
     DOM.btn.textContent = originalText;
     updateSubmitState(DOM.btn, isAllValidSync);

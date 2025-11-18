@@ -5,7 +5,7 @@ import { normalizePostsResponse } from './utils.js';
 import { fetchCurrentUser } from '../../shared/api/user.js';
 import { redirectToLogin } from '../../shared/utils/navigation.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
-import { MSG } from '../../shared/constants/messages.js';
+import { MSG, ERR } from '../../shared/constants/messages.js';
 
 const state = {
   page: 0,
@@ -35,7 +35,7 @@ function requestAuthorAvatar(imageUrl, apply) {
 
   fetchImageWithAuth(imageUrl)
     .then((res) => {
-      if (!res.ok) throw new Error(`이미지를 불러오지 못했습니다. (${res.status})`);
+      if (!res.ok) throw new Error(`${ERR.POST_IMAGE_RESPONSE} (${res.status})`);
       return res.blob();
     })
     .then((blob) => {
@@ -44,7 +44,7 @@ function requestAuthorAvatar(imageUrl, apply) {
       apply(objectUrl);
     })
     .catch((err) => {
-      console.warn('작성자 이미지를 불러오지 못했습니다.', err);
+      console.warn(ERR.AUTHOR_IMAGE_RESPONSE, err);
     });
 }
 
@@ -58,7 +58,7 @@ async function loadPosts() {
     const res = await fetchPosts({ page: currentPage, size: state.size });
     if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
-      throw new Error(`게시글 응답 오류 (${res.status})`);
+      throw new Error(`${ERR.POST_RESPONSE} (${res.status})`);
     }
 
     const json = await res.json();
@@ -77,8 +77,8 @@ async function loadPosts() {
     state.hasMore = hasMore;
     if (!state.hasMore) disconnectObserver();
   } catch (err) {
-    console.error('게시글을 불러오는 중 오류가 발생했습니다.', err);
-    alert(MSG.POST_LIST_FETCH_FAIL);
+    console.error(ERR.POST_LIST_FETCH_FAIL, err);
+    alert(ERR.POST_LIST_FETCH_FAIL);
     state.hasMore = false;
     disconnectObserver();
   } finally {
@@ -144,7 +144,7 @@ async function hydrateCurrentUser() {
   try {
     const res = await fetchCurrentUser();
     if (res.status === 401) return redirectToLogin();
-    if (!res.ok) throw new Error(`사용자 정보 요청 실패 (${res.status})`);
+    if (!res.ok) throw new Error(`${ERR.USER_FETCH} (${res.status})`);
 
     const payload = await res.json();
     const user = payload?.data ?? payload ?? {};
@@ -152,18 +152,18 @@ async function hydrateCurrentUser() {
     if (user.imageUrl) {
       try {
         const resImg = await fetchImageWithAuth(user.imageUrl);
-        if (!resImg.ok) throw new Error(`헤더 이미지 응답 오류 (${resImg.status})`);
+        if (!resImg.ok) throw new Error(`${ERR.IMAGE_RESPONSE} (${resImg.status})`);
         const blob = await resImg.blob();
         const objectUrl = URL.createObjectURL(blob);
         headerAvatarController.setAvatar(objectUrl, { track: 'external' });
       } catch (imgErr) {
-        console.warn('헤더 아바타 이미지를 불러오지 못했습니다.', imgErr);
+        console.warn(ERR.AVATAR_IMAGE_RESPONSE, imgErr);
       }
     } else {
       headerAvatarController.setAvatar(null);
     }
   } catch (err) {
-    console.warn('사용자 정보를 불러오지 못했습니다.', err);
+    console.warn(ERR.USER_FETCH, err);
   }
 }
 

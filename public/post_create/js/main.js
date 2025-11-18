@@ -5,7 +5,7 @@ import { redirectToLogin } from '../../shared/utils/navigation.js';
 import { createPost, fetchImageWithAuth } from '../../shared/api/post.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
 import { fetchCurrentUser } from '../../shared/api/user.js';
-import { MSG } from '../../shared/constants/messages.js';
+import { MSG, ERR } from '../../shared/constants/messages.js';
 
 const state = {
   avatarController: null,
@@ -79,7 +79,7 @@ async function handleSubmit(e) {
     const res = await createPost(fd);
     if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
-      let message = MSG.POST_CREATE_FAIL;
+      let message = ERR.POST_CREATE_FAIL;
       try {
         const data = await res.json();
         if (data && typeof data.message === 'string') message = data.message;
@@ -91,8 +91,8 @@ async function handleSubmit(e) {
     alert(MSG.POST_CREATE_SUCCESS);
     window.location.href = '../board/index.html';
   } catch (err) {
-    console.error('게시글 등록 오류', err);
-    alert(MSG.NETWORK_ERROR);
+    console.error(ERR.POST_CREATE_FAIL, err);
+    alert(ERR.NETWORK);
   } finally {
     DOM.submitBtn.textContent = originalText;
     updateSubmitState(DOM.submitBtn, isAllValid);
@@ -115,24 +115,24 @@ async function hydrateUser() {
   try {
     const res = await fetchCurrentUser();
     if (res.status === 401) return redirectToLogin();
-    if (!res.ok) throw new Error(`사용자 정보 요청 실패 (${res.status})`);
+    if (!res.ok) throw new Error(`${ERR.USER_FETCH} (${res.status})`);
     const payload = await res.json();
     const user = payload?.data ?? payload ?? {};
     if (user.imageUrl) {
       try {
         const resImg = await fetchImageWithAuth(user.imageUrl);
-        if (!resImg.ok) throw new Error('이미지 응답 오류');
+        if (!resImg.ok) throw new Error(ERR.IMAGE_RESPONSE);
         const blob = await resImg.blob();
         const url = URL.createObjectURL(blob);
         state.avatarController.setAvatar(url, { track: 'external' });
       } catch (imgErr) {
-        console.warn('헤더 아바타 로드 실패', imgErr);
+        console.warn(ERR.AVATAR_LOAD_FAIL, imgErr);
       }
     } else {
       state.avatarController.setAvatar(null);
     }
   } catch (err) {
-    console.warn('사용자 정보를 불러오지 못했습니다.', err);
+    console.warn(`${ERR.USER_FETCH}`, err);
   }
 }
 

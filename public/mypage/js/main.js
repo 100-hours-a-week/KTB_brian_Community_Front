@@ -5,7 +5,7 @@ import { setFieldHelper } from './ui.js';
 import { makeNicknameValidator } from '../../shared/validators.js';
 import { checkNickDup } from './availability.js';
 import { redirectToLogin } from '../../shared/utils/navigation.js';
-import { MSG } from '../../shared/constants/messages.js';
+import { MSG, ERR } from '../../shared/constants/messages.js';
 
 const state = {
   originalNickname: '',
@@ -32,7 +32,7 @@ function validateNicknameAsyncDup(onDone) {
       setFieldHelper(
         DOM.nicknameField,
         DOM.nicknameHelper,
-        MSG.NICK_DUP_FAIL,
+        ERR.NICK_DUP_FAIL,
         'warn',
       );
       onDone?.();
@@ -42,7 +42,7 @@ function validateNicknameAsyncDup(onDone) {
       setFieldHelper(
         DOM.nicknameField,
         DOM.nicknameHelper,
-        MSG.DUP_NICK,
+        ERR.DUP_NICK,
         'error',
       );
     } else {
@@ -56,12 +56,12 @@ async function loadRemoteAvatar(imageUrl) {
   if (!imageUrl || !state.avatarController) return;
   try {
     const res = await fetchUserImage(imageUrl);
-    if (!res.ok) throw new Error(`이미지 응답 오류 (${res.status})`);
+    if (!res.ok) throw new Error(`${ERR.IMAGE_RESPONSE} (${res.status})`);
     const blob = await res.blob();
     const objectUrl = URL.createObjectURL(blob);
     state.avatarController.setAvatar(objectUrl, { track: 'external' });
   } catch (err) {
-    console.warn(MSG.PROFILE_IMG_FAIL, err);
+    console.warn(ERR.PROFILE_IMG_FAIL, err);
   }
 }
 
@@ -69,7 +69,7 @@ async function hydrateUser() {
   try {
     const res = await fetchCurrentUser();
     if (res.status === 401) return redirectToLogin();
-    if (!res.ok) throw new Error(`사용자 정보 요청 실패 (status: ${res.status})`);
+    if (!res.ok) throw new Error(`${ERR.USER_FETCH} (${res.status})`);
 
     const payload = await res.json();
     const user = payload?.data ?? payload ?? {};
@@ -85,8 +85,8 @@ async function hydrateUser() {
       await loadRemoteAvatar(user.imageUrl);
     }
   } catch (err) {
-    console.error(MSG.USER_FETCH_FAIL, err);
-    alert(MSG.USER_FETCH_FAIL);
+    console.error(ERR.USER_FETCH, err);
+    alert(ERR.USER_FETCH);
   }
 }
 
@@ -126,7 +126,7 @@ async function handleSubmit(e) {
     const res = await updateUserProfile(fd);
     if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
-      let message = MSG.UPDATE_FAIL;
+      let message = ERR.UPDATE_FAIL;
       try {
         const body = await res.json();
         if (body && typeof body.message === 'string') message = body.message;
@@ -156,8 +156,8 @@ async function handleSubmit(e) {
     setFieldHelper(DOM.nicknameField, DOM.nicknameHelper, null, null);
     showToast();
   } catch (err) {
-    console.error('프로필 수정 오류', err);
-    alert(MSG.UPDATE_ERROR);
+    console.error(ERR.UPDATE_ERROR, err);
+    alert(ERR.UPDATE_ERROR);
   } finally {
     DOM.submitBtn.disabled = false;
     DOM.submitBtn.textContent = originalText;
@@ -213,7 +213,7 @@ async function handleDeleteAccount() {
     const res = await deleteCurrentUser();
     if (res.status === 401) return redirectToLogin();
     if (!res.ok && res.status !== 204) {
-      let msg = MSG.DELETE_FAIL;
+      let msg = ERR.DELETE_FAIL;
       try {
         const body = await res.json();
         if (body && typeof body.message === 'string') msg = body.message;
@@ -224,7 +224,7 @@ async function handleDeleteAccount() {
     alert(MSG.DELETE_SUCCESS);
     window.location.href = '../login/index.html';
   } catch (err) {
-    console.error('회원 탈퇴 오류', err);
-    alert(MSG.DELETE_ERROR);
+    console.error(ERR.DELETE_ERROR, err);
+    alert(ERR.DELETE_ERROR);
   }
 }

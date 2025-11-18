@@ -113,8 +113,10 @@ export function togglePostLike(postId) {
 }
 
 // 이미지 파일
+import { ERR } from '../constants/messages.js';
+
 export function fetchImageWithAuth(url) {
-  if (!url) throw new Error('image url is required');
+  if (!url) throw new Error(ERR.IMAGE_REQUIRED);
   return fetch(url, {
     headers: authHeaders(),
     credentials: 'include',

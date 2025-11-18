@@ -56,9 +56,10 @@ export function updatePassword({ password }) {
 
 // 유저 이미지 정보 수정
 export function fetchUserImage(imageUrl) {
-  if (!imageUrl) throw new Error('imageUrl is required');
+  if (!imageUrl) throw new Error(ERR.USER_IMAGE_REQUIRED);
   return fetch(imageUrl, {
     headers: authHeaders(),
     credentials: 'include',
   });
 }
+import { ERR } from '../constants/messages.js';
