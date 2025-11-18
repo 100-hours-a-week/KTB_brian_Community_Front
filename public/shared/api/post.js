@@ -88,7 +88,7 @@ export function deleteComment(postId, commentId) {
 }
 
 export function fetchPostComments(postId, { page = 0, size = 10 } = {}) {
-    const url = setPageParams(POSTS_URL, page, size);
+    const url = setPageParams(postCommentsUrl(postId), page, size);
 
     return fetch(url, {
         headers: authHeaders(JSON_HEADERS),
