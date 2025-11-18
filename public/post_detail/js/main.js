@@ -19,14 +19,14 @@ import {
   fetchPostLikeStatus,
   togglePostLike,
   fetchImageWithAuth,
-} from './api.js';
+} from '../../shared/api/post.js';
 import {
   getQueryParam,
   normalizeCommentsResponse,
   normalizePostResponse,
 } from './utils.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
-import { fetchCurrentUser } from '../../mypage/js/api.js';
+import { fetchCurrentUser } from '../../shared/api/user.js';
 
 const state = {
   postId: null,

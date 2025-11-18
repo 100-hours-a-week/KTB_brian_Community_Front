@@ -7,7 +7,7 @@ import {
   validatePasswordSync, validatePassword2Sync,
   validateNicknameSync, validateNicknameAsyncDup
 } from './validators.js';
-import { submitSignIn } from './api.js';
+import { submitSignIn } from '../../shared/api/user.js';
 
 function isAllValidSync() {
   const okProfile = DOM.profileWrap.classList.contains('has-image');

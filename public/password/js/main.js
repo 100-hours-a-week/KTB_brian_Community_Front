@@ -1,9 +1,10 @@
 import { DOM } from './dom.js';
 import { updateSubmitState, showToast } from './ui.js';
 import { validatePassword, validatePasswordConfirm } from './validators.js';
-import { updatePassword, fetchImageWithAuth } from './api.js';
+import { updatePassword } from '../../shared/api/user.js';
+import { fetchImageWithAuth } from '../../shared/api/post.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
-import { fetchCurrentUser } from '../../mypage/js/api.js';
+import { fetchCurrentUser } from '../../shared/api/user.js';
 
 function isAllValid() {
   const okPass = validatePassword({ showMsg: false });

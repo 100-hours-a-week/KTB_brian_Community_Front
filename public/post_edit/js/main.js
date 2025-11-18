@@ -1,9 +1,9 @@
 import { DOM } from './dom.js';
 import { updateSubmitState } from './ui.js';
 import { validateTitle, validateBody } from './validators.js';
-import { fetchPost, updatePost, fetchImageWithAuth } from './api.js';
+import { fetchPost, updatePost, fetchImageWithAuth } from '../../shared/api/post.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
-import { fetchCurrentUser } from '../../mypage/js/api.js';
+import { fetchCurrentUser } from '../../shared/api/user.js';
 
 const state = {
   avatarController: null,

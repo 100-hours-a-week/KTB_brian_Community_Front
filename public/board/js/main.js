@@ -1,8 +1,8 @@
-import { fetchPosts, fetchImageWithAuth } from './api.js';
+import { fetchPosts, fetchImageWithAuth } from '../../shared/api/post.js';
 import { DOM } from './dom.js';
 import { renderPosts, toggleEmptyState } from './ui.js';
 import { normalizePostsResponse } from './utils.js';
-import { fetchCurrentUser } from '../../mypage/js/api.js';
+import { fetchCurrentUser } from '../../shared/api/user.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
 
 const state = {

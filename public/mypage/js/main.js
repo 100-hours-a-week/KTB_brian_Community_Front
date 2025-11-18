@@ -1,5 +1,5 @@
 import { initAvatarSync } from '../../shared/avatar-sync.js';
-import { fetchCurrentUser, fetchUserImage, updateUserProfile, deleteCurrentUser } from './api.js';
+import { fetchCurrentUser, fetchUserImage, updateUserProfile, deleteCurrentUser } from '../../shared/api/user.js';
 import { DOM } from './dom.js';
 import { setFieldHelper } from './ui.js';
 import { validateNickname, validateNicknameAsyncDup } from './validators.js';

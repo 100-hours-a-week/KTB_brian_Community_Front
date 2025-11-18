@@ -2,7 +2,7 @@
 import { DOM } from './dom.js';
 import { updateSubmitState, hasAnyFieldError, setFieldHelper } from './ui.js';
 import { validateEmail, validatePassword } from './validators.js';
-import { loginRequest } from './api.js';
+import { loginRequest } from '../../shared/api/auth.js';
 import { setCookie } from './utils.js';
 
 function isAllValidSync(){
