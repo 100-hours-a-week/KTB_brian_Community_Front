@@ -199,8 +199,16 @@ async function handleSubmit(e) {
   }
 }
 
+function initBackButton() {
+  DOM.backBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = '../login/index.html';
+  });
+}
+
 function init() {
   initProfilePicker();
+  initBackButton();
   initFieldEvents();
   setProfileHelper(true);
   updateSubmitState(isAllValidSync);

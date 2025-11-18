@@ -28,4 +28,7 @@ export const DOM = {
   fieldNick: document.getElementById('field-nickname'),
   inputNick: document.getElementById('nickname'),
   helpNick:  document.getElementById('nickname-help'),
+
+  // nav
+  backBtn: document.getElementById('signin-back-btn'),
 };
