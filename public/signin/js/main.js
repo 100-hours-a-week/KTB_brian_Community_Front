@@ -142,15 +142,15 @@ function initFieldEvents() {
 async function handleSubmit(e) {
   e.preventDefault();
 
-  const ok = (
-    validateProfile({ showMsg:true }) &
-    validateEmailSync({ showMsg:true }) &
-    validatePasswordSync({ showMsg:true }) &
-    validatePassword2Sync({ showMsg:true }) &
-    validateNicknameSync({ showMsg:true })
-  );
-  updateSubmitState(isAllValidSync);
-  if (!isAllValidSync() || !ok) return;
+  const okProfile = validateProfile({ showMsg:true });
+  const okEmail   = validateEmailSync({ showMsg:true });
+  const okPw      = validatePasswordSync({ showMsg:true });
+  const okPw2     = validatePassword2Sync({ showMsg:true });
+  const okNick    = validateNicknameSync({ showMsg:true });
+  const allValid  = okProfile && okEmail && okPw && okPw2 && okNick && !hasAnyFieldError();
+
+  updateSubmitState(() => allValid);
+  if (!allValid) return;
 
   const fd = buildFormData({
     email:    DOM.inputEmail.value,
