@@ -10,6 +10,7 @@ import {
   makeNicknameValidator,
 } from '../../shared/validators.js';
 import { submitSignIn } from '../../shared/api/user.js';
+import { MSG } from '../../shared/constants/messages.js';
 
 const validateProfile = makeProfileValidator({
   hasImageFn: () => DOM.profileWrap.classList.contains('has-image'),
@@ -48,13 +49,13 @@ function validateEmailAsyncDup(onDone) {
       setFieldHelper(
         DOM.fieldEmail,
         DOM.helpEmail,
-        '이메일 중복 확인에 실패했습니다. 잠시 후 다시 시도해주세요.',
+        MSG.DUP_EMAIL_FAIL,
         'warn',
       );
       onDone?.();
       return;
     }
-    if (res.duplicate) setFieldHelper(DOM.fieldEmail, DOM.helpEmail, '*중복된 이메일입니다.', 'error');
+    if (res.duplicate) setFieldHelper(DOM.fieldEmail, DOM.helpEmail, MSG.DUP_EMAIL, 'error');
     else setFieldHelper(DOM.fieldEmail, DOM.helpEmail, null, null);
     onDone?.();
   });
@@ -67,13 +68,13 @@ function validateNicknameAsyncDup(onDone) {
       setFieldHelper(
         DOM.fieldNick,
         DOM.helpNick,
-        '닉네임 중복 확인에 실패했습니다. 잠시 후 다시 시도해주세요.',
+        MSG.DUP_NICK_FAIL,
         'warn',
       );
       onDone?.();
       return;
     }
-    if (res.duplicate) setFieldHelper(DOM.fieldNick, DOM.helpNick, '*중복된 닉네임입니다.', 'error');
+    if (res.duplicate) setFieldHelper(DOM.fieldNick, DOM.helpNick, MSG.DUP_NICK, 'error');
     else setFieldHelper(DOM.fieldNick, DOM.helpNick, null, null);
     onDone?.();
   });
@@ -161,25 +162,25 @@ async function handleSubmit(e) {
 
   const originalText = DOM.btn.textContent;
   DOM.btn.disabled = true;
-  DOM.btn.textContent = '처리 중...';
+  DOM.btn.textContent = MSG.PROCESSING;
 
   try {
     const res = await submitSignIn(fd);
 
     if (res.status === 409) {
-      let msg = '*중복된 정보가 있습니다.';
+      let msg = MSG.DUP_INFO_DEFAULT;
       try {
         const data = await res.json();
         if (data && typeof data.message === 'string') msg = data.message;
       } catch {}
       // 기본: 이메일 중복으로 표시
-      setFieldHelper(DOM.fieldEmail, DOM.helpEmail, '*중복된 이메일입니다.', 'error');
+      setFieldHelper(DOM.fieldEmail, DOM.helpEmail, MSG.DUP_EMAIL, 'error');
       updateSubmitState(isAllValidSync);
       return;
     }
 
     if (!res.ok) {
-      let errMsg = '요청 처리에 실패했습니다. 잠시 후 다시 시도해주세요.';
+      let errMsg = MSG.REQUEST_RETRY;
       try {
         const data = await res.json();
         if (data && typeof data.message === 'string') errMsg = data.message;
@@ -188,11 +189,11 @@ async function handleSubmit(e) {
       return;
     }
 
-    alert('회원가입이 완료되었습니다!');
+    alert(MSG.SIGNUP_SUCCESS);
     window.location.href = '../login/index.html';
 
   } catch (err) {
-    alert('네트워크 오류가 발생했습니다. 연결 상태를 확인해주세요.');
+    alert(MSG.NETWORK_ERROR);
   } finally {
     DOM.btn.textContent = originalText;
     updateSubmitState(isAllValidSync);

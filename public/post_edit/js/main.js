@@ -5,6 +5,7 @@ import { fetchPost, updatePost, fetchImageWithAuth } from '../../shared/api/post
 import { initAvatarSync } from '../../shared/avatar-sync.js';
 import { fetchCurrentUser } from '../../shared/api/user.js';
 import { redirectToLogin } from '../../shared/utils/navigation.js';
+import { MSG } from '../../shared/constants/messages.js';
 
 const state = {
   avatarController: null,
@@ -51,9 +52,9 @@ function bindFieldEvents() {
   });
 }
 
-function setSubmitting(isSubmitting, label = '수정하기') {
+function setSubmitting(isSubmitting, label = MSG.SUBMIT_UPDATE) {
   if (!DOM.submitBtn) return;
-  const text = isSubmitting ? '수정 중...' : label;
+  const text = isSubmitting ? MSG.PROCESSING_UPDATE : label;
   DOM.submitBtn.textContent = text;
   DOM.submitBtn.disabled = isSubmitting || !isAllValid();
 }
@@ -80,7 +81,7 @@ async function handleSubmit(e) {
     const res = await updatePost(state.postId, fd);
     if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
-      let message = '게시글 수정에 실패했습니다.';
+      let message = MSG.POST_UPDATE_FAIL;
       try {
         const data = await res.json();
         if (data && typeof data.message === 'string') message = data.message;
@@ -89,13 +90,13 @@ async function handleSubmit(e) {
       return;
     }
 
-    alert('게시글이 수정되었습니다!');
+    alert(MSG.POST_UPDATE_SUCCESS);
     window.location.href = `../post_detail/index.html?postId=${encodeURIComponent(
       state.postId,
     )}`;
   } catch (err) {
     console.error('게시글 수정 오류', err);
-    alert('네트워크 오류가 발생했습니다.');
+    alert(MSG.NETWORK_ERROR);
   } finally {
     DOM.submitBtn.textContent = originalText;
     updateSubmitState(DOM.submitBtn, isAllValid);
@@ -151,7 +152,7 @@ async function hydratePost() {
   try {
     const res = await fetchPost(state.postId);
     if (res.status === 404) {
-      alert('존재하지 않는 게시글입니다.');
+      alert(MSG.POST_NOT_FOUND);
       window.location.href = '../board/index.html';
       return;
     }
@@ -171,7 +172,7 @@ async function hydratePost() {
     updateSubmitState(DOM.submitBtn, isAllValid);
   } catch (err) {
     console.error(err);
-    alert('게시글 정보를 불러오지 못했습니다.');
+    alert(MSG.POST_FETCH_FAIL);
     window.location.href = '../board/index.html';
   }
 }
@@ -180,7 +181,7 @@ function init() {
   const params = new URLSearchParams(window.location.search);
   const postId = params.get('postId');
   if (!postId) {
-    alert('잘못된 접근입니다.');
+    alert(MSG.INVALID_ACCESS);
     window.location.href = '../board/index.html';
     return;
   }

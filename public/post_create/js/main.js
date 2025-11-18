@@ -1,10 +1,11 @@
 import { DOM } from './dom.js';
 import { updateSubmitState, setFieldHelper } from './ui.js';
 import { makeTitleValidator, makeBodyValidator } from '../../shared/validators.js';
+import { redirectToLogin } from '../../shared/utils/navigation.js';
 import { createPost, fetchImageWithAuth } from '../../shared/api/post.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
 import { fetchCurrentUser } from '../../shared/api/user.js';
-import { redirectToLogin } from '../../shared/utils/navigation.js';
+import { MSG } from '../../shared/constants/messages.js';
 
 const state = {
   avatarController: null,
@@ -49,9 +50,9 @@ function bindFieldEvents() {
   });
 }
 
-function setSubmitting(isSubmitting, label = '완료') {
+function setSubmitting(isSubmitting, label = MSG.POST_SUBMIT_LABEL) {
   if (!DOM.submitBtn) return;
-  const text = isSubmitting ? '등록 중...' : label;
+  const text = isSubmitting ? MSG.POST_PROCESSING : label;
   DOM.submitBtn.textContent = text;
   DOM.submitBtn.disabled = isSubmitting || !isAllValid();
 }
@@ -78,7 +79,7 @@ async function handleSubmit(e) {
     const res = await createPost(fd);
     if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
-      let message = '게시글 등록에 실패했습니다.';
+      let message = MSG.POST_CREATE_FAIL;
       try {
         const data = await res.json();
         if (data && typeof data.message === 'string') message = data.message;
@@ -87,11 +88,11 @@ async function handleSubmit(e) {
       return;
     }
 
-    alert('게시글이 등록되었습니다!');
+    alert(MSG.POST_CREATE_SUCCESS);
     window.location.href = '../board/index.html';
   } catch (err) {
     console.error('게시글 등록 오류', err);
-    alert('네트워크 오류가 발생했습니다.');
+    alert(MSG.NETWORK_ERROR);
   } finally {
     DOM.submitBtn.textContent = originalText;
     updateSubmitState(DOM.submitBtn, isAllValid);

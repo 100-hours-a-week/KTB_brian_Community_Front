@@ -1,5 +1,7 @@
 import { USER_AVAILABILITY_URL } from '../../shared/config/config.js';
 
+const DEBOUNCE_DELAY_MS = 300;
+
 function makeAvailabilityChecker(paramKey) {
   let timer = null;
   let controller = null;
@@ -34,7 +36,7 @@ function makeAvailabilityChecker(paramKey) {
         if (e.name === 'AbortError') return;
         cb({ ok: false, duplicate: false, reason: 'network' });
       }
-    }, 300);
+    }, DEBOUNCE_DELAY_MS);
   };
 }
 

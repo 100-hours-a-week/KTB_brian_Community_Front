@@ -5,11 +5,14 @@ import { setFieldHelper } from './ui.js';
 import { makeNicknameValidator } from '../../shared/validators.js';
 import { checkNickDup } from './availability.js';
 import { redirectToLogin } from '../../shared/utils/navigation.js';
+import { MSG } from '../../shared/constants/messages.js';
 
 const state = {
   originalNickname: '',
   avatarController: null,
 };
+
+const TOAST_DURATION_MS = 2500;
 
 const validateNickname = makeNicknameValidator({
   inputEl: DOM.nicknameInput,
@@ -29,7 +32,7 @@ function validateNicknameAsyncDup(onDone) {
       setFieldHelper(
         DOM.nicknameField,
         DOM.nicknameHelper,
-        '닉네임 중복 확인에 실패했습니다. 잠시 후 다시 시도해주세요.',
+        MSG.NICK_DUP_FAIL,
         'warn',
       );
       onDone?.();
@@ -39,7 +42,7 @@ function validateNicknameAsyncDup(onDone) {
       setFieldHelper(
         DOM.nicknameField,
         DOM.nicknameHelper,
-        '*중복된 닉네임입니다.',
+        MSG.DUP_NICK,
         'error',
       );
     } else {
@@ -58,7 +61,7 @@ async function loadRemoteAvatar(imageUrl) {
     const objectUrl = URL.createObjectURL(blob);
     state.avatarController.setAvatar(objectUrl, { track: 'external' });
   } catch (err) {
-    console.warn('프로필 이미지를 불러오지 못했습니다.', err);
+    console.warn(MSG.PROFILE_IMG_FAIL, err);
   }
 }
 
@@ -82,8 +85,8 @@ async function hydrateUser() {
       await loadRemoteAvatar(user.imageUrl);
     }
   } catch (err) {
-    console.error('사용자 정보를 불러오지 못했습니다.', err);
-    alert('사용자 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
+    console.error(MSG.USER_FETCH_FAIL, err);
+    alert(MSG.USER_FETCH_FAIL);
   }
 }
 
@@ -100,7 +103,7 @@ async function handleSubmit(e) {
   const fileSelected = hasProfileFile();
 
   if (!nicknameChanged && !fileSelected) {
-    alert('변경된 내용이 없습니다.');
+    alert(MSG.PROFILE_NO_CHANGES);
     return;
   }
 
@@ -117,13 +120,13 @@ async function handleSubmit(e) {
 
   const originalText = DOM.submitBtn.textContent;
   DOM.submitBtn.disabled = true;
-  DOM.submitBtn.textContent = '수정 중...';
+  DOM.submitBtn.textContent = MSG.PROCESSING_UPDATE;
 
   try {
     const res = await updateUserProfile(fd);
     if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
-      let message = '수정에 실패했습니다. 잠시 후 다시 시도해주세요.';
+      let message = MSG.UPDATE_FAIL;
       try {
         const body = await res.json();
         if (body && typeof body.message === 'string') message = body.message;
@@ -154,7 +157,7 @@ async function handleSubmit(e) {
     showToast();
   } catch (err) {
     console.error('프로필 수정 오류', err);
-    alert('프로필 수정 중 오류가 발생했습니다.');
+    alert(MSG.UPDATE_ERROR);
   } finally {
     DOM.submitBtn.disabled = false;
     DOM.submitBtn.textContent = originalText;
@@ -202,7 +205,7 @@ function showToast() {
   toast.classList.add('is-visible');
   setTimeout(() => {
     toast.classList.remove('is-visible');
-  }, 2500);
+  }, TOAST_DURATION_MS);
 }
 
 async function handleDeleteAccount() {
@@ -210,7 +213,7 @@ async function handleDeleteAccount() {
     const res = await deleteCurrentUser();
     if (res.status === 401) return redirectToLogin();
     if (!res.ok && res.status !== 204) {
-      let msg = '회원 탈퇴에 실패했습니다.';
+      let msg = MSG.DELETE_FAIL;
       try {
         const body = await res.json();
         if (body && typeof body.message === 'string') msg = body.message;
@@ -218,10 +221,10 @@ async function handleDeleteAccount() {
       alert(msg);
       return;
     }
-    alert('회원 탈퇴가 완료되었습니다.');
+    alert(MSG.DELETE_SUCCESS);
     window.location.href = '../login/index.html';
   } catch (err) {
     console.error('회원 탈퇴 오류', err);
-    alert('회원 탈퇴 중 오류가 발생했습니다.');
+    alert(MSG.DELETE_ERROR);
   }
 }

@@ -5,6 +5,7 @@ import { updatePassword } from '../../shared/api/user.js';
 import { fetchImageWithAuth } from '../../shared/api/post.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
 import { fetchCurrentUser } from '../../shared/api/user.js';
+import { MSG } from '../../shared/constants/messages.js';
 import { redirectToLogin } from '../../shared/utils/navigation.js';
 
 const validatePassword = makePasswordValidator({
@@ -63,13 +64,13 @@ async function handleSubmit(e) {
 
   const originalText = DOM.submitBtn.textContent;
   DOM.submitBtn.disabled = true;
-  DOM.submitBtn.textContent = '수정 중...';
+  DOM.submitBtn.textContent = MSG.PROCESSING_UPDATE;
 
   try {
     const res = await updatePassword({ password: DOM.passwordInput.value.trim() });
     if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
-      let message = '비밀번호 수정에 실패했습니다.';
+      let message = MSG.PW_UPDATE_FAIL;
       try {
         const data = await res.json();
         if (data && typeof data.message === 'string') message = data.message;
@@ -83,7 +84,7 @@ async function handleSubmit(e) {
     showToast();
   } catch (err) {
     console.error('비밀번호 수정 오류', err);
-    alert('비밀번호 수정 중 오류가 발생했습니다.');
+    alert(MSG.PW_UPDATE_ERROR);
   } finally {
     DOM.submitBtn.textContent = originalText;
     updateSubmitState(isAllValid);
@@ -118,13 +119,13 @@ async function hydrateUser() {
         const url = URL.createObjectURL(blob);
         state.avatarController.setAvatar(url, { track: 'external' });
       } catch (err) {
-        console.warn('헤더 아바타 로드 실패', err);
+        console.warn(MSG.AVATAR_LOAD_FAIL, err);
       }
     } else {
       state.avatarController.setAvatar(null);
     }
   } catch (err) {
-    console.warn('사용자 정보를 불러오지 못했습니다.', err);
+    console.warn(MSG.USER_FETCH_FAIL, err);
   }
 }
 

@@ -5,6 +5,7 @@ import { normalizePostsResponse } from './utils.js';
 import { fetchCurrentUser } from '../../shared/api/user.js';
 import { redirectToLogin } from '../../shared/utils/navigation.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
+import { MSG } from '../../shared/constants/messages.js';
 
 const state = {
   page: 0,
@@ -77,7 +78,7 @@ async function loadPosts() {
     if (!state.hasMore) disconnectObserver();
   } catch (err) {
     console.error('게시글을 불러오는 중 오류가 발생했습니다.', err);
-    alert('게시글을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
+    alert(MSG.POST_LIST_FETCH_FAIL);
     state.hasMore = false;
     disconnectObserver();
   } finally {
