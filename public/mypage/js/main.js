@@ -4,6 +4,7 @@ import { DOM } from './dom.js';
 import { setFieldHelper } from './ui.js';
 import { makeNicknameValidator } from '../../shared/validators.js';
 import { checkNickDup } from './availability.js';
+import { redirectToLogin } from '../../shared/utils/navigation.js';
 
 const state = {
   originalNickname: '',
@@ -64,10 +65,7 @@ async function loadRemoteAvatar(imageUrl) {
 async function hydrateUser() {
   try {
     const res = await fetchCurrentUser();
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok) throw new Error(`사용자 정보 요청 실패 (status: ${res.status})`);
 
     const payload = await res.json();
@@ -123,10 +121,7 @@ async function handleSubmit(e) {
 
   try {
     const res = await updateUserProfile(fd);
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
       let message = '수정에 실패했습니다. 잠시 후 다시 시도해주세요.';
       try {
@@ -213,10 +208,7 @@ function showToast() {
 async function handleDeleteAccount() {
   try {
     const res = await deleteCurrentUser();
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok && res.status !== 204) {
       let msg = '회원 탈퇴에 실패했습니다.';
       try {

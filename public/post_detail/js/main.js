@@ -27,6 +27,7 @@ import {
 } from './utils.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
 import { fetchCurrentUser } from '../../shared/api/user.js';
+import { redirectToLogin } from '../../shared/utils/navigation.js';
 
 const state = {
   postId: null,
@@ -213,10 +214,7 @@ function bindLikeButton() {
     if (!state.postId) return;
     try {
       const res = await togglePostLike(state.postId);
-      if (res.status === 401) {
-        window.location.href = '../login/index.html';
-        return;
-      }
+      if (res.status === 401) return redirectToLogin();
       if (!res.ok) throw new Error(`좋아요 처리 실패 (${res.status})`);
       state.likeLiked = !state.likeLiked;
       setLikeState(state.likeLiked);
@@ -258,10 +256,7 @@ async function handleCommentSubmit() {
   DOM.commentSubmit.textContent = '등록 중...';
   try {
     const res = await createComment(state.postId, content);
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
       let message = '댓글 등록에 실패했습니다.';
       try {
@@ -289,10 +284,7 @@ async function handleCommentUpdate(commentId) {
   DOM.commentSubmit.textContent = '수정 중...';
   try {
     const res = await updateComment(state.postId, commentId, content);
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
       alert('댓글 수정에 실패했습니다.');
       return;
@@ -373,10 +365,7 @@ async function handleCommentDeleteConfirm() {
   const { id, node } = state.commentToDelete;
   try {
     const res = await deleteComment(state.postId, id);
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok && res.status !== 204)
       throw new Error(`댓글 삭제 실패 (${res.status})`);
     node?.remove();
@@ -421,10 +410,7 @@ async function handlePostDeleteConfirm() {
   if (!state.postId) return;
   try {
     const res = await deletePost(state.postId);
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok && res.status !== 204)
       throw new Error(`게시글 삭제 실패 (${res.status})`);
     alert('게시글이 삭제되었습니다.');
@@ -449,10 +435,7 @@ async function hydrateHeaderAvatar() {
   if (!state.headerAvatarController) return;
   try {
     const res = await fetchCurrentUser();
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok) throw new Error('사용자 정보를 불러오지 못했습니다.');
     const payload = await res.json();
     const user = payload?.data ?? payload ?? {};

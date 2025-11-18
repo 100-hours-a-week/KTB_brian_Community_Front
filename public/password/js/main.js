@@ -5,6 +5,7 @@ import { updatePassword } from '../../shared/api/user.js';
 import { fetchImageWithAuth } from '../../shared/api/post.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
 import { fetchCurrentUser } from '../../shared/api/user.js';
+import { redirectToLogin } from '../../shared/utils/navigation.js';
 
 const validatePassword = makePasswordValidator({
   inputEl: DOM.passwordInput,
@@ -66,10 +67,7 @@ async function handleSubmit(e) {
 
   try {
     const res = await updatePassword({ password: DOM.passwordInput.value.trim() });
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
       let message = '비밀번호 수정에 실패했습니다.';
       try {
@@ -108,10 +106,7 @@ async function hydrateUser() {
   if (!state.avatarController) return;
   try {
     const res = await fetchCurrentUser();
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok) throw new Error(`사용자 정보 요청 실패 (${res.status})`);
     const payload = await res.json();
     const user = payload?.data ?? payload ?? {};

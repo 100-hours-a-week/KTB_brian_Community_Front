@@ -4,6 +4,7 @@ import { makeTitleValidator, makeBodyValidator } from '../../shared/validators.j
 import { fetchPost, updatePost, fetchImageWithAuth } from '../../shared/api/post.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
 import { fetchCurrentUser } from '../../shared/api/user.js';
+import { redirectToLogin } from '../../shared/utils/navigation.js';
 
 const state = {
   avatarController: null,
@@ -77,10 +78,7 @@ async function handleSubmit(e) {
 
   try {
     const res = await updatePost(state.postId, fd);
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
       let message = '게시글 수정에 실패했습니다.';
       try {
@@ -119,10 +117,7 @@ async function hydrateUser() {
   if (!state.avatarController) return;
   try {
     const res = await fetchCurrentUser();
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok) throw new Error(`사용자 정보 요청 실패 (${res.status})`);
     const payload = await res.json();
     const user = payload?.data ?? payload ?? {};

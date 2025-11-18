@@ -3,6 +3,7 @@ import { DOM } from './dom.js';
 import { renderPosts, toggleEmptyState } from './ui.js';
 import { normalizePostsResponse } from './utils.js';
 import { fetchCurrentUser } from '../../shared/api/user.js';
+import { redirectToLogin } from '../../shared/utils/navigation.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
 
 const state = {
@@ -54,10 +55,7 @@ async function loadPosts() {
 
   try {
     const res = await fetchPosts({ page: currentPage, size: state.size });
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
       throw new Error(`게시글 응답 오류 (${res.status})`);
     }
@@ -144,10 +142,7 @@ async function hydrateCurrentUser() {
 
   try {
     const res = await fetchCurrentUser();
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok) throw new Error(`사용자 정보 요청 실패 (${res.status})`);
 
     const payload = await res.json();
