@@ -12,7 +12,7 @@
     <header class="header" role="banner">
       <div class="header__inner">
         <div class="header__action header__action--left"></div>
-        <h1 class="header__title">프레임 로그</h1>
+        <h1 class="header__title"><a data-route="board" href="/board/index.html">프레임 로그</a></h1>
         <div class="header__action header__action--right"></div>
       </div>
     </header>
@@ -39,7 +39,7 @@
         <div class="actions">
           <button class="btn btn--primary" id="login-btn" type="submit" disabled>로그인</button>
           <div class="link-row">
-            <a class="link" href="../signin/index.html">회원가입</a>
+            <a class="link" data-route="signin" href="../signin/index.html">회원가입</a>
           </div>
         </div>
       </form>
@@ -48,5 +48,6 @@
 
   <!-- ✅ ESM entry -->
   <script type="module" src="./js/main.js"></script>
+  <script type="module" src="../shared/route-links.js"></script>
 </body>
 </html>

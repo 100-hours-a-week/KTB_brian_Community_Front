@@ -69,6 +69,13 @@ body {
   background: var(--bg-page);
   color: var(--text);
   font-family: var(--font-body);
+  /* Keep scrollbar space reserved to avoid horizontal shifts when pages scroll */
+  overflow-y: scroll;
+}
+
+html {
+  /* Aligns content without shifting when scrollbars appear (modern browsers) */
+  scrollbar-gutter: stable both-edges;
 }
 
 /* ===================== 1) Page Shell ===================== */
@@ -136,6 +143,11 @@ body {
   font-weight: 700;
   letter-spacing: -0.5px;
   white-space: nowrap;
+}
+
+.header__title a {
+  color: inherit;
+  text-decoration: none;
 }
 
 .header--with-back .icon-btn svg {

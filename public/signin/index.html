@@ -20,7 +20,7 @@
             </svg>
           </button>
         </div>
-        <h1 class="header__title">프레임 로그</h1>
+        <h1 class="header__title"><a data-route="board" href="/board/index.html">프레임 로그</a></h1>
         <div class="header__action header__action--right"></div>
       </div>
     </header>
@@ -80,13 +80,14 @@
         <!-- 버튼 -->
         <div class="actions">
           <button class="btn btn--primary btn--block" id="signup-btn" type="submit" disabled>회원가입</button>
-          <a class="btn btn--outline btn--block" href="../login/index.html">로그인하러 가기</a>
+          <a class="btn btn--outline btn--block" data-route="login" href="../login/index.html">로그인하러 가기</a>
         </div>
       </form>
     </main>
   </div>
 
   <script type="module" src="js/main.js"></script>
+  <script type="module" src="../shared/route-links.js"></script>
 </body>
 
 </html>
