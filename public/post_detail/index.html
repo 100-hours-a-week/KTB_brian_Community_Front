@@ -8,26 +8,30 @@
 </head>
 <body>
 <div class="app">
-    <header class="header header--with-back" role="banner">
+    <header class="header" role="banner">
         <div class="header__inner">
-            <button class="icon-btn" type="button" aria-label="뒤로가기" data-btn-back>
-                <svg viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M10 1 L2 9 L10 17" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                </svg>
-            </button>
+            <div class="header__action header__action--left">
+                <button class="icon-btn" type="button" aria-label="뒤로가기" data-btn-back>
+                    <svg viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M10 1 L2 9 L10 17" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                </button>
+            </div>
             <h1 class="header__title">아무말 대잔치</h1>
-            <details class="user-menu">
-                <summary aria-label="사용자 메뉴 열기">
-                    <span class="avatar" data-avatar-menu>
-                        <img alt="사용자 아바타" data-avatar-preview />
-                    </span>
-                </summary>
-                <nav class="menu" aria-label="사용자 메뉴">
-                <a href="../mypage/index.html">회원정보수정</a>
-                <a href="../password/index.html">비밀번호수정</a>
-                <a href="#" data-logout>로그아웃</a>
-            </nav>
-        </details>
+            <div class="header__action header__action--right">
+                <details class="user-menu">
+                    <summary aria-label="사용자 메뉴 열기">
+                        <span class="avatar" data-avatar-menu>
+                            <img alt="사용자 아바타" data-avatar-preview />
+                        </span>
+                    </summary>
+                    <nav class="menu" aria-label="사용자 메뉴">
+                    <a href="../mypage/index.html">회원정보수정</a>
+                    <a href="../password/index.html">비밀번호수정</a>
+                    <a href="#" data-logout>로그아웃</a>
+                </nav>
+            </details>
+            </div>
         </div>
     </header>
 

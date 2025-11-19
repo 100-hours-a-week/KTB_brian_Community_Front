@@ -12,16 +12,19 @@
     <!-- 헤더 -->
     <header class="header" role="banner">
         <div class="header__inner">
+            <div class="header__action header__action--left"></div>
             <h1 class="header__title">아무말 대잔치</h1>
             <!-- 우상단 유저 메뉴: details/summary로 No-JS 토글 -->
-            <details class="user-menu">
-                <summary aria-label="사용자 메뉴 열기"><span class="avatar" aria-hidden="true" data-avatar-menu></span></summary>
-                <nav class="menu" aria-label="사용자 메뉴">
-                    <a href="#">회원정보수정</a>
-                    <a href="../password/index.html">비밀번호수정</a>
-                    <a href="#" data-logout>로그아웃</a>
-                </nav>
-            </details>
+            <div class="header__action header__action--right">
+                <details class="user-menu">
+                    <summary aria-label="사용자 메뉴 열기"><span class="avatar" aria-hidden="true" data-avatar-menu></span></summary>
+                    <nav class="menu" aria-label="사용자 메뉴">
+                        <a href="#">회원정보수정</a>
+                        <a href="../password/index.html">비밀번호수정</a>
+                        <a href="#" data-logout>로그아웃</a>
+                    </nav>
+                </details>
+            </div>
         </div>
     </header>
 
