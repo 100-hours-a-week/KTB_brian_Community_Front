@@ -1,5 +1,7 @@
 import { DOM } from './dom.js';
 
+const TOAST_DURATION_MS = 2500;
+
 export function setFieldHelper(fieldEl, helperEl, msg, level = 'error') {
   if (!fieldEl || !helperEl) return;
   fieldEl.classList.remove('field--error', 'field--warn', 'field--info');
@@ -20,5 +22,5 @@ export function updateSubmitState(isAllValidFn) {
 export function showToast() {
   if (!DOM.toast) return;
   DOM.toast.classList.add('is-visible');
-  setTimeout(() => DOM.toast.classList.remove('is-visible'), 2500);
+  setTimeout(() => DOM.toast.classList.remove('is-visible'), TOAST_DURATION_MS);
 }

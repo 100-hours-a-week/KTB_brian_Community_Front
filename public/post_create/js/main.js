@@ -1,13 +1,28 @@
 import { DOM } from './dom.js';
-import { updateSubmitState } from './ui.js';
-import { validateTitle, validateBody } from './validators.js';
-import { createPost, fetchImageWithAuth } from './api.js';
+import { updateSubmitState, setFieldHelper } from './ui.js';
+import { makeTitleValidator, makeBodyValidator } from '../../shared/validators.js';
+import { redirectToLogin } from '../../shared/utils/navigation.js';
+import { createPost, fetchImageWithAuth } from '../../shared/api/post.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
-import { fetchCurrentUser } from '../../mypage/js/api.js';
+import { fetchCurrentUser } from '../../shared/api/user.js';
+import { MSG, ERR } from '../../shared/constants/messages.js';
 
 const state = {
   avatarController: null,
 };
+
+const validateTitle = makeTitleValidator({
+  inputEl: DOM.titleInput,
+  fieldEl: DOM.titleField,
+  helpEl: DOM.titleHelper,
+  setHelper: setFieldHelper,
+});
+const validateBody = makeBodyValidator({
+  inputEl: DOM.bodyInput,
+  fieldEl: DOM.bodyField,
+  helpEl: DOM.bodyHelper,
+  setHelper: setFieldHelper,
+});
 
 function isAllValid() {
   const okTitle = validateTitle({ showMsg: false });
@@ -35,9 +50,9 @@ function bindFieldEvents() {
   });
 }
 
-function setSubmitting(isSubmitting, label = '완료') {
+function setSubmitting(isSubmitting, label = MSG.POST_SUBMIT_LABEL) {
   if (!DOM.submitBtn) return;
-  const text = isSubmitting ? '등록 중...' : label;
+  const text = isSubmitting ? MSG.POST_PROCESSING : label;
   DOM.submitBtn.textContent = text;
   DOM.submitBtn.disabled = isSubmitting || !isAllValid();
 }
@@ -62,12 +77,9 @@ async function handleSubmit(e) {
 
   try {
     const res = await createPost(fd);
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
-      let message = '게시글 등록에 실패했습니다.';
+      let message = ERR.POST_CREATE_FAIL;
       try {
         const data = await res.json();
         if (data && typeof data.message === 'string') message = data.message;
@@ -76,11 +88,11 @@ async function handleSubmit(e) {
       return;
     }
 
-    alert('게시글이 등록되었습니다!');
+    alert(MSG.POST_CREATE_SUCCESS);
     window.location.href = '../board/index.html';
   } catch (err) {
-    console.error('게시글 등록 오류', err);
-    alert('네트워크 오류가 발생했습니다.');
+    console.error(ERR.POST_CREATE_FAIL, err);
+    alert(ERR.NETWORK);
   } finally {
     DOM.submitBtn.textContent = originalText;
     updateSubmitState(DOM.submitBtn, isAllValid);
@@ -102,28 +114,25 @@ async function hydrateUser() {
   if (!state.avatarController) return;
   try {
     const res = await fetchCurrentUser();
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
-    if (!res.ok) throw new Error(`사용자 정보 요청 실패 (${res.status})`);
+    if (res.status === 401) return redirectToLogin();
+    if (!res.ok) throw new Error(`${ERR.USER_FETCH} (${res.status})`);
     const payload = await res.json();
     const user = payload?.data ?? payload ?? {};
     if (user.imageUrl) {
       try {
         const resImg = await fetchImageWithAuth(user.imageUrl);
-        if (!resImg.ok) throw new Error('이미지 응답 오류');
+        if (!resImg.ok) throw new Error(ERR.IMAGE_RESPONSE);
         const blob = await resImg.blob();
         const url = URL.createObjectURL(blob);
         state.avatarController.setAvatar(url, { track: 'external' });
       } catch (imgErr) {
-        console.warn('헤더 아바타 로드 실패', imgErr);
+        console.warn(ERR.AVATAR_LOAD_FAIL, imgErr);
       }
     } else {
       state.avatarController.setAvatar(null);
     }
   } catch (err) {
-    console.warn('사용자 정보를 불러오지 못했습니다.', err);
+    console.warn(`${ERR.USER_FETCH}`, err);
   }
 }
 

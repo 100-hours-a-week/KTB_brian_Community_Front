@@ -1,15 +1,30 @@
 import { DOM } from './dom.js';
-import { updateSubmitState } from './ui.js';
-import { validateTitle, validateBody } from './validators.js';
-import { fetchPost, updatePost, fetchImageWithAuth } from './api.js';
+import { updateSubmitState, setFieldHelper } from './ui.js';
+import { makeTitleValidator, makeBodyValidator } from '../../shared/validators.js';
+import { fetchPost, updatePost, fetchImageWithAuth } from '../../shared/api/post.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
-import { fetchCurrentUser } from '../../mypage/js/api.js';
+import { fetchCurrentUser } from '../../shared/api/user.js';
+import { redirectToLogin } from '../../shared/utils/navigation.js';
+import { MSG, ERR } from '../../shared/constants/messages.js';
 
 const state = {
   avatarController: null,
   postId: null,
   existingImageUrl: null,
 };
+
+const validateTitle = makeTitleValidator({
+  inputEl: DOM.titleInput,
+  fieldEl: DOM.titleField,
+  helpEl: DOM.titleHelper,
+  setHelper: setFieldHelper,
+});
+const validateBody = makeBodyValidator({
+  inputEl: DOM.bodyInput,
+  fieldEl: DOM.bodyField,
+  helpEl: DOM.bodyHelper,
+  setHelper: setFieldHelper,
+});
 
 function isAllValid() {
   const okTitle = validateTitle({ showMsg: false });
@@ -37,9 +52,9 @@ function bindFieldEvents() {
   });
 }
 
-function setSubmitting(isSubmitting, label = '수정하기') {
+function setSubmitting(isSubmitting, label = MSG.SUBMIT_UPDATE) {
   if (!DOM.submitBtn) return;
-  const text = isSubmitting ? '수정 중...' : label;
+  const text = isSubmitting ? MSG.PROCESSING_UPDATE : label;
   DOM.submitBtn.textContent = text;
   DOM.submitBtn.disabled = isSubmitting || !isAllValid();
 }
@@ -64,12 +79,9 @@ async function handleSubmit(e) {
 
   try {
     const res = await updatePost(state.postId, fd);
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
-      let message = '게시글 수정에 실패했습니다.';
+      let message = ERR.POST_UPDATE_FAIL;
       try {
         const data = await res.json();
         if (data && typeof data.message === 'string') message = data.message;
@@ -78,13 +90,13 @@ async function handleSubmit(e) {
       return;
     }
 
-    alert('게시글이 수정되었습니다!');
+    alert(MSG.POST_UPDATE_SUCCESS);
     window.location.href = `../post_detail/index.html?postId=${encodeURIComponent(
       state.postId,
     )}`;
   } catch (err) {
-    console.error('게시글 수정 오류', err);
-    alert('네트워크 오류가 발생했습니다.');
+    console.error(ERR.POST_UPDATE_FAIL, err);
+    alert(ERR.NETWORK);
   } finally {
     DOM.submitBtn.textContent = originalText;
     updateSubmitState(DOM.submitBtn, isAllValid);
@@ -106,28 +118,25 @@ async function hydrateUser() {
   if (!state.avatarController) return;
   try {
     const res = await fetchCurrentUser();
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
-    if (!res.ok) throw new Error(`사용자 정보 요청 실패 (${res.status})`);
+    if (res.status === 401) return redirectToLogin();
+    if (!res.ok) throw new Error(`${ERR.USER_FETCH} (${res.status})`);
     const payload = await res.json();
     const user = payload?.data ?? payload ?? {};
     if (user.imageUrl) {
       try {
         const resImg = await fetchImageWithAuth(user.imageUrl);
-        if (!resImg.ok) throw new Error('이미지 응답 오류');
+        if (!resImg.ok) throw new Error(ERR.IMAGE_RESPONSE);
         const blob = await resImg.blob();
         const url = URL.createObjectURL(blob);
         state.avatarController.setAvatar(url, { track: 'external' });
       } catch (imgErr) {
-        console.warn('헤더 아바타 로드 실패', imgErr);
+        console.warn(ERR.AVATAR_LOAD_FAIL, imgErr);
       }
     } else {
       state.avatarController.setAvatar(null);
     }
   } catch (err) {
-    console.warn('사용자 정보를 불러오지 못했습니다.', err);
+    console.warn(ERR.USER_FETCH, err);
   }
 }
 
@@ -143,11 +152,11 @@ async function hydratePost() {
   try {
     const res = await fetchPost(state.postId);
     if (res.status === 404) {
-      alert('존재하지 않는 게시글입니다.');
+      alert(ERR.POST_NOT_FOUND);
       window.location.href = '../board/index.html';
       return;
     }
-    if (!res.ok) throw new Error(`게시글 정보를 불러오지 못했습니다. (${res.status})`);
+    if (!res.ok) throw new Error(`${ERR.POST_FETCH} (${res.status})`);
     const json = await res.json();
     const payload = json?.data ?? json ?? {};
     const post = payload.post ?? payload ?? {};
@@ -163,7 +172,7 @@ async function hydratePost() {
     updateSubmitState(DOM.submitBtn, isAllValid);
   } catch (err) {
     console.error(err);
-    alert('게시글 정보를 불러오지 못했습니다.');
+    alert(ERR.POST_FETCH_FAIL);
     window.location.href = '../board/index.html';
   }
 }
@@ -172,7 +181,7 @@ function init() {
   const params = new URLSearchParams(window.location.search);
   const postId = params.get('postId');
   if (!postId) {
-    alert('잘못된 접근입니다.');
+    alert(ERR.INVALID_ACCESS);
     window.location.href = '../board/index.html';
     return;
   }

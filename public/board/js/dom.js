@@ -4,4 +4,5 @@ export const DOM = {
   sentinel: document.getElementById('infinite-sentinel'),
   emptyState: document.getElementById('post-empty-state'),
   newPostBtn: document.querySelector('[data-btn-new-post]'),
+  tabs: document.querySelectorAll('[data-tab]'),
 };

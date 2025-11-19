@@ -1,9 +1,22 @@
-import { fetchPosts, fetchImageWithAuth } from './api.js';
+import {
+  fetchPosts,
+  fetchMyPosts,
+  fetchLikedPosts,
+  fetchImageWithAuth,
+} from '../../shared/api/post.js';
 import { DOM } from './dom.js';
 import { renderPosts, toggleEmptyState } from './ui.js';
 import { normalizePostsResponse } from './utils.js';
-import { fetchCurrentUser } from '../../mypage/js/api.js';
+import { fetchCurrentUser } from '../../shared/api/user.js';
+import { redirectToLogin } from '../../shared/utils/navigation.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
+import { MSG, ERR } from '../../shared/constants/messages.js';
+
+const FETCHERS = {
+  all: fetchPosts,
+  mine: fetchMyPosts,
+  liked: fetchLikedPosts,
+};
 
 const state = {
   page: 0,
@@ -11,6 +24,7 @@ const state = {
   isLoading: false,
   hasMore: true,
   observer: null,
+  filter: 'all', // all | mine | liked
 };
 
 const avatarCache = new Map();
@@ -33,7 +47,7 @@ function requestAuthorAvatar(imageUrl, apply) {
 
   fetchImageWithAuth(imageUrl)
     .then((res) => {
-      if (!res.ok) throw new Error(`이미지를 불러오지 못했습니다. (${res.status})`);
+      if (!res.ok) throw new Error(`${ERR.POST_IMAGE_RESPONSE} (${res.status})`);
       return res.blob();
     })
     .then((blob) => {
@@ -42,24 +56,36 @@ function requestAuthorAvatar(imageUrl, apply) {
       apply(objectUrl);
     })
     .catch((err) => {
-      console.warn('작성자 이미지를 불러오지 못했습니다.', err);
+      console.warn(ERR.AUTHOR_IMAGE_RESPONSE, err);
     });
 }
 
-async function loadPosts() {
+function getFetcher() {
+  return FETCHERS[state.filter] || FETCHERS.all;
+}
+
+function resetPostList() {
+  state.page = 0;
+  state.hasMore = true;
+  toggleEmptyState(false);
+  if (DOM.postList) DOM.postList.replaceChildren();
+}
+
+async function loadPosts({ reset = false } = {}) {
+  if (reset) {
+    resetPostList();
+  }
   if (state.isLoading || !state.hasMore) return;
 
   state.isLoading = true;
   const currentPage = state.page;
+  const fetcher = getFetcher();
 
   try {
-    const res = await fetchPosts({ page: currentPage, size: state.size });
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    const res = await fetcher({ page: currentPage, size: state.size });
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
-      throw new Error(`게시글 응답 오류 (${res.status})`);
+      throw new Error(`${ERR.POST_RESPONSE} (${res.status})`);
     }
 
     const json = await res.json();
@@ -78,8 +104,8 @@ async function loadPosts() {
     state.hasMore = hasMore;
     if (!state.hasMore) disconnectObserver();
   } catch (err) {
-    console.error('게시글을 불러오는 중 오류가 발생했습니다.', err);
-    alert('게시글을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
+    console.error(ERR.POST_LIST_FETCH_FAIL, err);
+    alert(ERR.POST_LIST_FETCH_FAIL);
     state.hasMore = false;
     disconnectObserver();
   } finally {
@@ -106,6 +132,40 @@ function initNewPostButton() {
   if (!DOM.newPostBtn) return;
   DOM.newPostBtn.addEventListener('click', () => {
     window.location.href = '../post_create/index.html';
+  });
+}
+
+function setActiveTab(tab) {
+  if (!DOM.tabs || DOM.tabs.length === 0) return;
+  Array.from(DOM.tabs).forEach((btn) => {
+    const isActive = btn === tab;
+    btn.classList.toggle('is-active', isActive);
+    btn.setAttribute('aria-selected', String(isActive));
+    btn.tabIndex = isActive ? 0 : -1;
+  });
+}
+
+function handleTabClick(tab) {
+  if (!tab || tab.dataset.tab === state.filter) return;
+  state.filter = tab.dataset.tab || 'all';
+  setActiveTab(tab);
+  loadPosts({ reset: true });
+}
+
+function initTabs() {
+  if (!DOM.tabs || DOM.tabs.length === 0) return;
+  const initialActive =
+    Array.from(DOM.tabs).find((tab) => tab.classList.contains('is-active')) ||
+    DOM.tabs[0];
+  setActiveTab(initialActive);
+  DOM.tabs.forEach((tab) => {
+    tab.addEventListener('click', () => handleTabClick(tab));
+    tab.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleTabClick(tab);
+      }
+    });
   });
 }
 
@@ -144,11 +204,8 @@ async function hydrateCurrentUser() {
 
   try {
     const res = await fetchCurrentUser();
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
-    if (!res.ok) throw new Error(`사용자 정보 요청 실패 (${res.status})`);
+    if (res.status === 401) return redirectToLogin();
+    if (!res.ok) throw new Error(`${ERR.USER_FETCH} (${res.status})`);
 
     const payload = await res.json();
     const user = payload?.data ?? payload ?? {};
@@ -156,23 +213,24 @@ async function hydrateCurrentUser() {
     if (user.imageUrl) {
       try {
         const resImg = await fetchImageWithAuth(user.imageUrl);
-        if (!resImg.ok) throw new Error(`헤더 이미지 응답 오류 (${resImg.status})`);
+        if (!resImg.ok) throw new Error(`${ERR.IMAGE_RESPONSE} (${resImg.status})`);
         const blob = await resImg.blob();
         const objectUrl = URL.createObjectURL(blob);
         headerAvatarController.setAvatar(objectUrl, { track: 'external' });
       } catch (imgErr) {
-        console.warn('헤더 아바타 이미지를 불러오지 못했습니다.', imgErr);
+        console.warn(ERR.AVATAR_IMAGE_RESPONSE, imgErr);
       }
     } else {
       headerAvatarController.setAvatar(null);
     }
   } catch (err) {
-    console.warn('사용자 정보를 불러오지 못했습니다.', err);
+    console.warn(ERR.USER_FETCH, err);
   }
 }
 
 function init() {
   initNewPostButton();
+  initTabs();
   initPostNavigation();
   initInfiniteScroll();
   headerAvatarController = initAvatarSync({

@@ -5,23 +5,26 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="./styles.css" />
-    <title>회원정보 수정 - 컴포넌트 기반</title>
+    <title>회원정보 수정 - 프레임 로그</title>
 </head>
 <body>
 <div class="app">
     <!-- 헤더 -->
     <header class="header" role="banner">
         <div class="header__inner">
-            <h1 class="header__title">아무말 대잔치</h1>
+            <div class="header__action header__action--left"></div>
+            <h1 class="header__title"><a data-route="board" href="#">프레임 로그</a></h1>
             <!-- 우상단 유저 메뉴: details/summary로 No-JS 토글 -->
-            <details class="user-menu">
-                <summary aria-label="사용자 메뉴 열기"><span class="avatar" aria-hidden="true" data-avatar-menu></span></summary>
-                <nav class="menu" aria-label="사용자 메뉴">
-                    <a href="#">회원정보수정</a>
-                    <a href="../password/index.html">비밀번호수정</a>
-                    <a href="#" data-logout>로그아웃</a>
-                </nav>
-            </details>
+            <div class="header__action header__action--right">
+                <details class="user-menu">
+                    <summary aria-label="사용자 메뉴 열기"><span class="avatar" aria-hidden="true" data-avatar-menu></span></summary>
+                    <nav class="menu" aria-label="사용자 메뉴">
+                        <a data-route="mypage" href="#">회원정보수정</a>
+                        <a data-route="password" href="#">비밀번호수정</a>
+                        <a href="#" data-logout>로그아웃</a>
+                    </nav>
+                </details>
+            </div>
         </div>
     </header>
 
@@ -82,6 +85,7 @@
 </div>
 
 <script type="module" src="js/main.js"></script>
+<script type="module" src="../shared/route-links.js"></script>
 <script src="../shared/logout.js" defer></script>
 </body>
 

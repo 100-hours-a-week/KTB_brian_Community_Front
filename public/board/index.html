@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>게시판 - 아무말 대잔치</title>
+  <title>게시판 - 프레임 로그</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
@@ -12,8 +12,9 @@
   <div class="app">
     <header class="header" role="banner">
       <div class="header__inner">
-        <h1 class="header__title">아무말 대잔치</h1>
-        <div class="header__right">
+        <div class="header__action header__action--left"></div>
+        <h1 class="header__title"><a data-route="board" href="#">프레임 로그</a></h1>
+        <div class="header__action header__action--right">
           <details class="user-menu">
             <summary aria-label="사용자 메뉴 열기">
               <span class="avatar" data-avatar-menu>
@@ -21,8 +22,8 @@
               </span>
             </summary>
             <nav class="menu" aria-label="사용자 메뉴">
-              <a href="../mypage/index.html">회원정보수정</a>
-              <a href="../password/index.html">비밀번호수정</a>
+              <a data-route="mypage" href="#">회원정보수정</a>
+              <a data-route="password" href="#">비밀번호수정</a>
               <a href="#" data-logout>로그아웃</a>
             </nav>
           </details>
@@ -31,13 +32,20 @@
     </header>
 
     <main class="container" role="main">
-      <section class="hero">
-        <p class="hero__greet">안녕하세요,<br />아무 말 대잔치 <b>게시판</b> 입니다.</p>
-        <button class="btn hero__cta" type="button" data-btn-new-post>게시글 작성</button>
-      </section>
+      <div class="board-actions">
+        <div class="board-tabs" role="tablist" aria-label="게시글 분류">
+          <button class="chip chip--ghost is-active" type="button" role="tab" aria-selected="true" data-tab="all">전체</button>
+          <button class="chip chip--ghost" type="button" role="tab" aria-selected="false" tabindex="-1" data-tab="mine">내 글</button>
+          <button class="chip chip--ghost" type="button" role="tab" aria-selected="false" tabindex="-1" data-tab="liked">좋아요</button>
+        </div>
+        <button class="btn btn--primary" type="button" data-btn-new-post>게시글 작성</button>
+      </div>
 
       <section class="post-list mt-8" aria-label="게시글 목록" data-post-list></section>
-      <p class="post-list__empty" id="post-empty-state" hidden>작성된 게시글이 없습니다.</p>
+      <p class="post-list__empty film-frame film-frame--empty" id="post-empty-state" hidden>
+        아직 채워진 프레임이 없어요.
+        <small>첫 장의 이야기를 남겨주세요.</small>
+      </p>
 
       <template id="post-card-template">
         <article class="post-card">
@@ -66,6 +74,7 @@
   </div>
 
   <script type="module" src="js/main.js"></script>
+  <script type="module" src="../shared/route-links.js"></script>
   <script src="../shared/logout.js" defer></script>
 </body>
 
