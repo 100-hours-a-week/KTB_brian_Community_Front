@@ -6,11 +6,6 @@
   flex-direction: column;
 }
 
-.user-menu {
-  position: absolute;
-  right: var(--s-6);
-}
-
 .container {
   flex: 1;
   padding: var(--s-10) var(--s-6) var(--s-12);

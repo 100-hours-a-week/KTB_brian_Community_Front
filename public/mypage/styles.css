@@ -1,10 +1,5 @@
 @import url('../styles.css');
 
-.user-menu {
-  position: absolute;
-  right: var(--s-6);
-}
-
 .container {
   max-width: var(--container-max);
   margin: 0 auto;
