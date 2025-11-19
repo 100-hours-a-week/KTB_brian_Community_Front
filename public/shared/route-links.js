@@ -7,6 +7,8 @@ function applyRouteLinks() {
     const href = ROUTES[key];
     if (href) {
       el.setAttribute('href', href);
+    } else {
+      console.warn(`[route-links] Unknown route key: ${key}`);
     }
   });
 }

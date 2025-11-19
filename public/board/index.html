@@ -13,7 +13,7 @@
     <header class="header" role="banner">
       <div class="header__inner">
         <div class="header__action header__action--left"></div>
-        <h1 class="header__title"><a data-route="board" href="/board/index.html">프레임 로그</a></h1>
+        <h1 class="header__title"><a data-route="board" href="#">프레임 로그</a></h1>
         <div class="header__action header__action--right">
           <details class="user-menu">
             <summary aria-label="사용자 메뉴 열기">
@@ -22,8 +22,8 @@
               </span>
             </summary>
             <nav class="menu" aria-label="사용자 메뉴">
-              <a data-route="mypage" href="../mypage/index.html">회원정보수정</a>
-              <a data-route="password" href="../password/index.html">비밀번호수정</a>
+              <a data-route="mypage" href="#">회원정보수정</a>
+              <a data-route="password" href="#">비밀번호수정</a>
               <a href="#" data-logout>로그아웃</a>
             </nav>
           </details>
@@ -35,8 +35,8 @@
       <div class="board-actions">
         <div class="board-tabs" role="tablist" aria-label="게시글 분류">
           <button class="chip chip--ghost is-active" type="button" role="tab" aria-selected="true" data-tab="all">전체</button>
-          <button class="chip chip--ghost" type="button" role="tab" aria-selected="false" data-tab="mine">내 글</button>
-          <button class="chip chip--ghost" type="button" role="tab" aria-selected="false" data-tab="liked">좋아요</button>
+          <button class="chip chip--ghost" type="button" role="tab" aria-selected="false" tabindex="-1" data-tab="mine">내 글</button>
+          <button class="chip chip--ghost" type="button" role="tab" aria-selected="false" tabindex="-1" data-tab="liked">좋아요</button>
         </div>
         <button class="btn btn--primary" type="button" data-btn-new-post>게시글 작성</button>
       </div>
