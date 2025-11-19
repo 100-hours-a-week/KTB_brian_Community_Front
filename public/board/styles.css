@@ -96,9 +96,5 @@
 }
 
 .post-list__empty {
-  text-align: center;
-  color: var(--muted);
   font-size: var(--fs-14);
-  margin-top: var(--s-6);
-  font-weight: 700;
 }

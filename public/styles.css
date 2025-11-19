@@ -481,3 +481,58 @@ body {
 .user-menu .menu a:hover {
   background: var(--accent-blue);
 }
+
+/* Film-inspired frame for empty/feature blocks */
+.film-frame {
+  position: relative;
+  isolation: isolate;
+  padding: var(--s-6);
+  border: 3px solid var(--line);
+  border-radius: var(--r-xl);
+  background: linear-gradient(145deg, #ffffff 0%, #f5efe4 100%);
+  box-shadow: 0 12px 0 #00000014;
+  overflow: hidden;
+}
+
+.film-frame > * {
+  position: relative;
+  z-index: 1;
+}
+
+.film-frame::before,
+.film-frame::after {
+  content: "";
+  position: absolute;
+  left: var(--s-6);
+  right: var(--s-6);
+  height: 12px;
+  border-radius: 999px;
+  background: repeating-linear-gradient(90deg, transparent 0 18px, rgba(0, 0, 0, 0.12) 18px 28px);
+  opacity: 0.6;
+  z-index: 0;
+}
+
+.film-frame::before {
+  top: var(--s-4);
+}
+
+.film-frame::after {
+  bottom: var(--s-4);
+  transform: scaleY(-1);
+}
+
+.film-frame--empty {
+  max-width: 520px;
+  margin: var(--s-8) auto 0;
+  text-align: center;
+  color: var(--muted);
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.film-frame--empty small {
+  display: block;
+  margin-top: var(--s-2);
+  font-weight: 600;
+  color: var(--text);
+}

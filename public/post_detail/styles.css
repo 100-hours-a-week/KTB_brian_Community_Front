@@ -187,10 +187,7 @@
 }
 
 .comments__empty {
-  text-align: center;
-  color: var(--muted);
-  margin-top: var(--s-4);
-  font-weight: 700;
+  font-size: var(--fs-14);
 }
 
 .comment {
