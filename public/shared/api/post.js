@@ -64,7 +64,7 @@ export function fetchMyPosts({ page = 0, size = 10 } = {}) {
 }
 
 export function fetchLikedPosts({ page = 0, size = 10 } = {}) {
-  const url = setPageParams(`${POSTS_URL}/me/liked`, page, size);
+  const url = setPageParams(`${POSTS_URL}/like`, page, size);
 
   return fetch(url, {
     headers: authHeaders(JSON_HEADERS),
