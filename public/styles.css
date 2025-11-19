@@ -295,10 +295,6 @@ html {
   background: none;
 }
 
-.profile__upload.has-image .profile__preview {
-  display: block;
-}
-
 .profile__upload.has-image .profile__plus {
   display: none;
 }
@@ -307,7 +303,7 @@ html {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: none;
+  display: block;
 }
 
 .profile__plus {

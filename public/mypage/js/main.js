@@ -94,6 +94,22 @@ function hasProfileFile() {
   return Boolean(DOM.fileInput && DOM.fileInput.files && DOM.fileInput.files[0]);
 }
 
+function syncProfilePreviewState() {
+  if (!DOM.profileUpload || !DOM.profilePreview) return;
+  const hasImage = Boolean(DOM.profilePreview.getAttribute('src'));
+  DOM.profileUpload.classList.toggle('has-image', hasImage);
+}
+
+function bindProfilePreviewState() {
+  if (!DOM.profilePreview) return;
+  ['load', 'error'].forEach((evt) => {
+    DOM.profilePreview.addEventListener(evt, () => {
+      syncProfilePreviewState();
+    });
+  });
+  syncProfilePreviewState();
+}
+
 async function handleSubmit(e) {
   e.preventDefault();
   if (!DOM.nicknameInput || !DOM.submitBtn) return;
@@ -188,6 +204,7 @@ function bootMypage() {
     fileInputSelector: '#profile-file-input',
     triggerSelector: '.profile__change',
   });
+  bindProfilePreviewState();
 
   bindEvents();
   hydrateUser();

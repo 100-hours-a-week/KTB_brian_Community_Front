@@ -90,22 +90,48 @@ function isAllValidSync() {
 }
 
 function initProfilePicker() {
+  let activeObjectUrl = null;
+
+  const resetPreview = () => {
+    if (activeObjectUrl) {
+      URL.revokeObjectURL(activeObjectUrl);
+      activeObjectUrl = null;
+    }
+    DOM.profileInput.value = '';
+    DOM.profileWrap.classList.remove('has-image');
+    DOM.profileImg.removeAttribute('src');
+    DOM.profileImg.hidden = true;
+    setProfileHelper(true);
+    updateSubmitState(isAllValidSync);
+  };
+
   DOM.profileInput.addEventListener('change', () => {
     const file = DOM.profileInput.files && DOM.profileInput.files[0];
     if (!file) {
-      DOM.profileWrap.classList.remove('has-image');
-      setProfileHelper(true);
-      updateSubmitState(isAllValidSync);
+      resetPreview();
       return;
     }
+    if (activeObjectUrl) {
+      URL.revokeObjectURL(activeObjectUrl);
+      activeObjectUrl = null;
+    }
     const url = URL.createObjectURL(file);
+    activeObjectUrl = url;
     DOM.profileImg.src = url;
-    DOM.profileImg.onload = () => URL.revokeObjectURL(url);
+    DOM.profileImg.hidden = false;
+    DOM.profileImg.onload = () => {
+      if (activeObjectUrl === url) {
+        URL.revokeObjectURL(url);
+        activeObjectUrl = null;
+      }
+    };
     DOM.profileWrap.classList.add('has-image');
     // 메시지 숨김
     validateProfile({ showMsg:false });
     updateSubmitState(isAllValidSync);
   });
+
+  DOM.profileInput.addEventListener('cancel', resetPreview);
 }
 
 function initFieldEvents() {
