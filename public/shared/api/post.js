@@ -54,6 +54,24 @@ export function fetchPosts({ page = 0, size = 10 } = {}) {
   });
 }
 
+export function fetchMyPosts({ page = 0, size = 10 } = {}) {
+  const url = setPageParams(`${POSTS_URL}/me`, page, size);
+
+  return fetch(url, {
+    headers: authHeaders(JSON_HEADERS),
+    credentials: 'include',
+  });
+}
+
+export function fetchLikedPosts({ page = 0, size = 10 } = {}) {
+  const url = setPageParams(`${POSTS_URL}/me/liked`, page, size);
+
+  return fetch(url, {
+    headers: authHeaders(JSON_HEADERS),
+    credentials: 'include',
+  });
+}
+
 // 댓글 CRUD API
 export function createComment(postId, content) {
   return fetch(postCommentsUrl(postId), {

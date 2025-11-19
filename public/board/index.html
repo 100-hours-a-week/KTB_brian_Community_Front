@@ -33,6 +33,11 @@
 
     <main class="container" role="main">
       <div class="board-actions">
+        <div class="board-tabs" role="tablist" aria-label="게시글 분류">
+          <button class="chip chip--ghost is-active" type="button" role="tab" aria-selected="true" data-tab="all">전체</button>
+          <button class="chip chip--ghost" type="button" role="tab" aria-selected="false" data-tab="mine">내 글</button>
+          <button class="chip chip--ghost" type="button" role="tab" aria-selected="false" data-tab="liked">좋아요</button>
+        </div>
         <button class="btn btn--primary" type="button" data-btn-new-post>게시글 작성</button>
       </div>
 

@@ -1,4 +1,9 @@
-import { fetchPosts, fetchImageWithAuth } from '../../shared/api/post.js';
+import {
+  fetchPosts,
+  fetchMyPosts,
+  fetchLikedPosts,
+  fetchImageWithAuth,
+} from '../../shared/api/post.js';
 import { DOM } from './dom.js';
 import { renderPosts, toggleEmptyState } from './ui.js';
 import { normalizePostsResponse } from './utils.js';
@@ -13,6 +18,7 @@ const state = {
   isLoading: false,
   hasMore: true,
   observer: null,
+  filter: 'all', // all | mine | liked
 };
 
 const avatarCache = new Map();
@@ -48,14 +54,30 @@ function requestAuthorAvatar(imageUrl, apply) {
     });
 }
 
-async function loadPosts() {
+function resolveFetcher() {
+  if (state.filter === 'mine') return fetchMyPosts;
+  if (state.filter === 'liked') return fetchLikedPosts;
+  return fetchPosts;
+}
+
+async function loadPosts({ reset = false } = {}) {
+  if (state.isLoading || (!state.hasMore && !reset)) return;
+
+  if (reset) {
+    state.page = 0;
+    state.hasMore = true;
+    toggleEmptyState(false);
+    if (DOM.postList) DOM.postList.innerHTML = '';
+  }
+
   if (state.isLoading || !state.hasMore) return;
 
   state.isLoading = true;
   const currentPage = state.page;
+  const fetcher = resolveFetcher();
 
   try {
-    const res = await fetchPosts({ page: currentPage, size: state.size });
+    const res = await fetcher({ page: currentPage, size: state.size });
     if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
       throw new Error(`${ERR.POST_RESPONSE} (${res.status})`);
@@ -105,6 +127,26 @@ function initNewPostButton() {
   if (!DOM.newPostBtn) return;
   DOM.newPostBtn.addEventListener('click', () => {
     window.location.href = '../post_create/index.html';
+  });
+}
+
+function handleTabClick(tab) {
+  if (!tab || tab.dataset.tab === state.filter) return;
+  DOM.tabs?.forEach((btn) => btn.classList.toggle('is-active', btn === tab));
+  state.filter = tab.dataset.tab || 'all';
+  loadPosts({ reset: true });
+}
+
+function initTabs() {
+  if (!DOM.tabs || DOM.tabs.length === 0) return;
+  DOM.tabs.forEach((tab) => {
+    tab.addEventListener('click', () => handleTabClick(tab));
+    tab.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleTabClick(tab);
+      }
+    });
   });
 }
 
@@ -169,6 +211,7 @@ async function hydrateCurrentUser() {
 
 function init() {
   initNewPostButton();
+  initTabs();
   initPostNavigation();
   initInfiniteScroll();
   headerAvatarController = initAvatarSync({

@@ -4,30 +4,28 @@
   padding: var(--s-8) var(--s-6) var(--s-10);
 }
 
-.hero {
+.board-actions {
   display: grid;
   grid-template-columns: 1fr auto;
-  align-items: center;
   gap: var(--s-4);
+  align-items: center;
   margin-top: var(--s-8);
-  padding: var(--s-6);
-  background: var(--accent-blue);
-  border: 3px solid var(--line);
-  border-radius: var(--r-lg);
-  box-shadow: 0 12px 0 #0000001f;
 }
 
-.hero__greet {
-  grid-column: 1 / -1;
-  text-align: center;
-  font-size: var(--fs-24);
-  line-height: var(--lh-130);
-  font-weight: 800;
-  letter-spacing: 0.5px;
+.board-tabs {
+  display: inline-flex;
+  gap: var(--s-2);
 }
 
-.hero__cta .btn {
+.board-tabs .chip {
+  min-width: 96px;
+  justify-content: center;
+  border-color: var(--line);
+}
+
+.board-tabs .chip.is-active {
   background: var(--accent-yellow);
+  border-color: var(--line);
 }
 
 .post-list {
