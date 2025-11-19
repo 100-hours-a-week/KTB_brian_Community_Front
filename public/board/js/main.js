@@ -12,6 +12,12 @@ import { redirectToLogin } from '../../shared/utils/navigation.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
 import { MSG, ERR } from '../../shared/constants/messages.js';
 
+const FETCHERS = {
+  all: fetchPosts,
+  mine: fetchMyPosts,
+  liked: fetchLikedPosts,
+};
+
 const state = {
   page: 0,
   size: 5,
@@ -54,27 +60,26 @@ function requestAuthorAvatar(imageUrl, apply) {
     });
 }
 
-function resolveFetcher() {
-  if (state.filter === 'mine') return fetchMyPosts;
-  if (state.filter === 'liked') return fetchLikedPosts;
-  return fetchPosts;
+function getFetcher() {
+  return FETCHERS[state.filter] || FETCHERS.all;
+}
+
+function resetPostList() {
+  state.page = 0;
+  state.hasMore = true;
+  toggleEmptyState(false);
+  if (DOM.postList) DOM.postList.replaceChildren();
 }
 
 async function loadPosts({ reset = false } = {}) {
-  if (state.isLoading || (!state.hasMore && !reset)) return;
-
   if (reset) {
-    state.page = 0;
-    state.hasMore = true;
-    toggleEmptyState(false);
-    if (DOM.postList) DOM.postList.innerHTML = '';
+    resetPostList();
   }
-
   if (state.isLoading || !state.hasMore) return;
 
   state.isLoading = true;
   const currentPage = state.page;
-  const fetcher = resolveFetcher();
+  const fetcher = getFetcher();
 
   try {
     const res = await fetcher({ page: currentPage, size: state.size });
@@ -130,15 +135,29 @@ function initNewPostButton() {
   });
 }
 
+function setActiveTab(tab) {
+  if (!DOM.tabs || DOM.tabs.length === 0) return;
+  Array.from(DOM.tabs).forEach((btn) => {
+    const isActive = btn === tab;
+    btn.classList.toggle('is-active', isActive);
+    btn.setAttribute('aria-selected', String(isActive));
+    btn.tabIndex = isActive ? 0 : -1;
+  });
+}
+
 function handleTabClick(tab) {
   if (!tab || tab.dataset.tab === state.filter) return;
-  DOM.tabs?.forEach((btn) => btn.classList.toggle('is-active', btn === tab));
   state.filter = tab.dataset.tab || 'all';
+  setActiveTab(tab);
   loadPosts({ reset: true });
 }
 
 function initTabs() {
   if (!DOM.tabs || DOM.tabs.length === 0) return;
+  const initialActive =
+    Array.from(DOM.tabs).find((tab) => tab.classList.contains('is-active')) ||
+    DOM.tabs[0];
+  setActiveTab(initialActive);
   DOM.tabs.forEach((tab) => {
     tab.addEventListener('click', () => handleTabClick(tab));
     tab.addEventListener('keydown', (e) => {

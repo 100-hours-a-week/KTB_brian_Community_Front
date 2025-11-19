@@ -6,7 +6,6 @@ export const DOM = {
   // profile
   profileWrap:   document.querySelector('.profile__upload'),
   profileInput:  document.getElementById('profile'),
-  profileImg:    document.querySelector('.profile__preview'),
   profileHelper: document.getElementById('profile-help'),
 
   // email

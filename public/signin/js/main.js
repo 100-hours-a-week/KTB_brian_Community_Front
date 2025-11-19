@@ -11,6 +11,7 @@ import {
 } from '../../shared/validators.js';
 import { submitSignIn } from '../../shared/api/user.js';
 import { MSG, ERR } from '../../shared/constants/messages.js';
+import { initAvatarSync } from '../../shared/avatar-sync.js';
 
 const validateProfile = makeProfileValidator({
   hasImageFn: () => DOM.profileWrap.classList.contains('has-image'),
@@ -90,48 +91,22 @@ function isAllValidSync() {
 }
 
 function initProfilePicker() {
-  let activeObjectUrl = null;
-
-  const resetPreview = () => {
-    if (activeObjectUrl) {
-      URL.revokeObjectURL(activeObjectUrl);
-      activeObjectUrl = null;
-    }
-    DOM.profileInput.value = '';
-    DOM.profileWrap.classList.remove('has-image');
-    DOM.profileImg.removeAttribute('src');
-    DOM.profileImg.hidden = true;
-    setProfileHelper(true);
-    updateSubmitState(isAllValidSync);
-  };
-
-  DOM.profileInput.addEventListener('change', () => {
-    const file = DOM.profileInput.files && DOM.profileInput.files[0];
-    if (!file) {
-      resetPreview();
-      return;
-    }
-    if (activeObjectUrl) {
-      URL.revokeObjectURL(activeObjectUrl);
-      activeObjectUrl = null;
-    }
-    const url = URL.createObjectURL(file);
-    activeObjectUrl = url;
-    DOM.profileImg.src = url;
-    DOM.profileImg.hidden = false;
-    DOM.profileImg.onload = () => {
-      if (activeObjectUrl === url) {
-        URL.revokeObjectURL(url);
-        activeObjectUrl = null;
+  initAvatarSync({
+    previewSelector: '.profile__preview',
+    wrapperSelector: '.profile__upload',
+    fileInputSelector: '#profile',
+    triggerSelector: '.profile__upload',
+    hidePreviewWhenEmpty: true,
+    resetOnCancel: true,
+    previewFallbackSrc: '',
+    onChange: ({ hasImage }) => {
+      setProfileHelper(!hasImage);
+      if (hasImage) {
+        validateProfile({ showMsg: false });
       }
-    };
-    DOM.profileWrap.classList.add('has-image');
-    // 메시지 숨김
-    validateProfile({ showMsg:false });
-    updateSubmitState(isAllValidSync);
+      updateSubmitState(isAllValidSync);
+    },
   });
-
-  DOM.profileInput.addEventListener('cancel', resetPreview);
 }
 
 function initFieldEvents() {

@@ -303,7 +303,7 @@ html {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
+  display: none;
 }
 
 .profile__plus {
@@ -312,6 +312,10 @@ html {
   width: 24px;
   height: 24px;
   filter: drop-shadow(0 4px 0 #00000010);
+}
+
+.profile__upload.has-image .profile__preview {
+  display: block;
 }
 
 .field--profile {

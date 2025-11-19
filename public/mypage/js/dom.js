@@ -9,6 +9,4 @@ export const DOM = {
     document.querySelector('.form .btn.btn--primary'),
   fileInput: document.getElementById('profile-file-input'),
   deleteConfirmBtn: document.querySelector('[data-delete-confirm]'),
-  profileUpload: document.querySelector('.profile__upload'),
-  profilePreview: document.querySelector('[data-avatar-preview]'),
 };
