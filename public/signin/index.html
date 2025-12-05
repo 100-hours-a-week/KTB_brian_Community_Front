@@ -4,21 +4,24 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>회원가입 - 컴포넌트 기반</title>
+  <title>회원가입 - 프레임 로그</title>
   <link rel="stylesheet" href="../styles.css" />
 </head>
 
 <body>
   <div class="app">
     <!-- 헤더 -->
-    <header class="header header--with-back" role="banner">
+    <header class="header" role="banner">
       <div class="header__inner">
-        <button class="icon-btn" type="button" aria-label="뒤로가기" id="signin-back-btn">
-          <svg viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M10 1 L2 9 L10 17" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-        <h1 class="header__title">아무말 대잔치</h1>
+        <div class="header__action header__action--left">
+          <button class="icon-btn" type="button" aria-label="뒤로가기" id="signin-back-btn">
+            <svg viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M10 1 L2 9 L10 17" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        </div>
+        <h1 class="header__title"><a data-route="board" href="#">프레임 로그</a></h1>
+        <div class="header__action header__action--right"></div>
       </div>
     </header>
 
@@ -32,7 +35,7 @@
           <label class="field__label" for="profile">프로필 사진*</label>
           <p class="profile__helper" id="profile-help">* 프로필 사진을 추가해주세요.</p>
           <div class="profile__upload" data-required="true" aria-describedby="profile-help">
-            <img class="profile__preview" alt="프로필 미리보기" />
+            <img class="profile__preview"/>
             <input id="profile" name="profile" type="file" accept="image/*" />
             <svg class="profile__plus" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
               aria-hidden="true">
@@ -77,19 +80,14 @@
         <!-- 버튼 -->
         <div class="actions">
           <button class="btn btn--primary btn--block" id="signup-btn" type="submit" disabled>회원가입</button>
-          <a class="btn btn--outline btn--block" href="../login/index.html">로그인하러 가기</a>
+          <a class="btn btn--outline btn--block" data-route="login" href="#">로그인하러 가기</a>
         </div>
       </form>
     </main>
   </div>
 
   <script type="module" src="js/main.js"></script>
-  <script>
-    document.getElementById('signin-back-btn')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.href = '../login/index.html';
-    });
-  </script>
+  <script type="module" src="../shared/route-links.js"></script>
 </body>
 
 </html>

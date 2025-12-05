@@ -1,13 +1,85 @@
 import { DOM } from './dom.js';
 import { buildFormData } from './utils.js';
 import { updateSubmitState, hasAnyFieldError, setFieldHelper, setProfileHelper } from './ui.js';
+import { checkEmailDup, checkNickDup } from './availability.js';
 import {
-  validateProfile,
-  validateEmailSync, validateEmailAsyncDup,
-  validatePasswordSync, validatePassword2Sync,
-  validateNicknameSync, validateNicknameAsyncDup
-} from './validators.js';
-import { submitSignIn } from './api.js';
+  makeProfileValidator,
+  makeEmailValidator,
+  makePasswordValidator,
+  makePasswordConfirmValidator,
+  makeNicknameValidator,
+} from '../../shared/validators.js';
+import { submitSignIn } from '../../shared/api/user.js';
+import { MSG, ERR } from '../../shared/constants/messages.js';
+import { initAvatarSync } from '../../shared/avatar-sync.js';
+
+const validateProfile = makeProfileValidator({
+  hasImageFn: () => DOM.profileWrap.classList.contains('has-image'),
+  setProfileHelper,
+});
+const validateEmailSync = makeEmailValidator({
+  inputEl: DOM.inputEmail,
+  fieldEl: DOM.fieldEmail,
+  helpEl: DOM.helpEmail,
+  setHelper: setFieldHelper,
+});
+const validatePasswordSync = makePasswordValidator({
+  inputEl: DOM.inputPw,
+  fieldEl: DOM.fieldPw,
+  helpEl: DOM.helpPw,
+  setHelper: setFieldHelper,
+});
+const validatePassword2Sync = makePasswordConfirmValidator({
+  passwordInputEl: DOM.inputPw,
+  confirmInputEl: DOM.inputPw2,
+  fieldEl: DOM.fieldPw2,
+  helpEl: DOM.helpPw2,
+  setHelper: setFieldHelper,
+});
+const validateNicknameSync = makeNicknameValidator({
+  inputEl: DOM.inputNick,
+  fieldEl: DOM.fieldNick,
+  helpEl: DOM.helpNick,
+  setHelper: setFieldHelper,
+});
+
+function validateEmailAsyncDup(onDone) {
+  const v = (DOM.inputEmail.value || '').trim();
+  checkEmailDup(v, (res) => {
+    if (!res.ok) {
+      setFieldHelper(
+        DOM.fieldEmail,
+        DOM.helpEmail,
+        ERR.DUP_EMAIL_FAIL,
+        'warn',
+      );
+      onDone?.();
+      return;
+    }
+    if (res.duplicate) setFieldHelper(DOM.fieldEmail, DOM.helpEmail, ERR.DUP_EMAIL, 'error');
+    else setFieldHelper(DOM.fieldEmail, DOM.helpEmail, null, null);
+    onDone?.();
+  });
+}
+
+function validateNicknameAsyncDup(onDone) {
+  const v = DOM.inputNick.value || '';
+  checkNickDup(v, (res) => {
+    if (!res.ok) {
+      setFieldHelper(
+        DOM.fieldNick,
+        DOM.helpNick,
+        ERR.DUP_NICK_FAIL,
+        'warn',
+      );
+      onDone?.();
+      return;
+    }
+    if (res.duplicate) setFieldHelper(DOM.fieldNick, DOM.helpNick, ERR.DUP_NICK, 'error');
+    else setFieldHelper(DOM.fieldNick, DOM.helpNick, null, null);
+    onDone?.();
+  });
+}
 
 function isAllValidSync() {
   const okProfile = DOM.profileWrap.classList.contains('has-image');
@@ -19,21 +91,20 @@ function isAllValidSync() {
 }
 
 function initProfilePicker() {
-  DOM.profileInput.addEventListener('change', () => {
-    const file = DOM.profileInput.files && DOM.profileInput.files[0];
-    if (!file) {
-      DOM.profileWrap.classList.remove('has-image');
-      setProfileHelper(true);
+  initAvatarSync({
+    previewSelector: '.profile__preview',
+    wrapperSelector: '.profile__upload',
+    fileInputSelector: '#profile',
+    hidePreviewWhenEmpty: true,
+    resetOnCancel: true,
+    previewFallbackSrc: '',
+    onChange: ({ hasImage }) => {
+      setProfileHelper(!hasImage);
+      if (hasImage) {
+        validateProfile({ showMsg: false });
+      }
       updateSubmitState(isAllValidSync);
-      return;
-    }
-    const url = URL.createObjectURL(file);
-    DOM.profileImg.src = url;
-    DOM.profileImg.onload = () => URL.revokeObjectURL(url);
-    DOM.profileWrap.classList.add('has-image');
-    // 메시지 숨김
-    validateProfile({ showMsg:false });
-    updateSubmitState(isAllValidSync);
+    },
   });
 }
 
@@ -72,15 +143,15 @@ function initFieldEvents() {
 async function handleSubmit(e) {
   e.preventDefault();
 
-  const ok = (
-    validateProfile({ showMsg:true }) &
-    validateEmailSync({ showMsg:true }) &
-    validatePasswordSync({ showMsg:true }) &
-    validatePassword2Sync({ showMsg:true }) &
-    validateNicknameSync({ showMsg:true })
-  );
-  updateSubmitState(isAllValidSync);
-  if (!isAllValidSync() || !ok) return;
+  const okProfile = validateProfile({ showMsg:true });
+  const okEmail   = validateEmailSync({ showMsg:true });
+  const okPw      = validatePasswordSync({ showMsg:true });
+  const okPw2     = validatePassword2Sync({ showMsg:true });
+  const okNick    = validateNicknameSync({ showMsg:true });
+  const allValid  = okProfile && okEmail && okPw && okPw2 && okNick && !hasAnyFieldError();
+
+  updateSubmitState(() => allValid);
+  if (!allValid) return;
 
   const fd = buildFormData({
     email:    DOM.inputEmail.value,
@@ -91,25 +162,25 @@ async function handleSubmit(e) {
 
   const originalText = DOM.btn.textContent;
   DOM.btn.disabled = true;
-  DOM.btn.textContent = '처리 중...';
+  DOM.btn.textContent = MSG.PROCESSING;
 
   try {
     const res = await submitSignIn(fd);
 
     if (res.status === 409) {
-      let msg = '*중복된 정보가 있습니다.';
+      let msg = ERR.DUP_INFO_DEFAULT;
       try {
         const data = await res.json();
         if (data && typeof data.message === 'string') msg = data.message;
       } catch {}
       // 기본: 이메일 중복으로 표시
-      setFieldHelper(DOM.fieldEmail, DOM.helpEmail, '*중복된 이메일입니다.', 'error');
+      setFieldHelper(DOM.fieldEmail, DOM.helpEmail, ERR.DUP_EMAIL, 'error');
       updateSubmitState(isAllValidSync);
       return;
     }
 
     if (!res.ok) {
-      let errMsg = '요청 처리에 실패했습니다. 잠시 후 다시 시도해주세요.';
+      let errMsg = ERR.REQUEST_RETRY;
       try {
         const data = await res.json();
         if (data && typeof data.message === 'string') errMsg = data.message;
@@ -118,19 +189,27 @@ async function handleSubmit(e) {
       return;
     }
 
-    alert('회원가입이 완료되었습니다!');
+    alert(MSG.SIGNUP_SUCCESS);
     window.location.href = '../login/index.html';
 
   } catch (err) {
-    alert('네트워크 오류가 발생했습니다. 연결 상태를 확인해주세요.');
+    alert(ERR.NETWORK);
   } finally {
     DOM.btn.textContent = originalText;
     updateSubmitState(isAllValidSync);
   }
 }
 
+function initBackButton() {
+  DOM.backBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = '../login/index.html';
+  });
+}
+
 function init() {
   initProfilePicker();
+  initBackButton();
   initFieldEvents();
   setProfileHelper(true);
   updateSubmitState(isAllValidSync);

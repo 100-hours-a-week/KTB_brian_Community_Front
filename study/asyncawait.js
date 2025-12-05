@@ -1,7 +1,6 @@
 async function fetchNumber() {
     console.log("fetchNumber 시작")
     setTimeout(()=>{resolve(1)},1000);
-    const result = await 
 }
 
 async function printNumbers() {

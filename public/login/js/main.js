@@ -1,9 +1,23 @@
 // main.js
 import { DOM } from './dom.js';
 import { updateSubmitState, hasAnyFieldError, setFieldHelper } from './ui.js';
-import { validateEmail, validatePassword } from './validators.js';
-import { loginRequest } from './api.js';
+import { makeEmailValidator, makePasswordValidator } from '../../shared/validators.js';
+import { loginRequest } from '../../shared/api/auth.js';
 import { setCookie } from './utils.js';
+import { MSG, ERR } from '../../shared/constants/messages.js';
+
+const validateEmail = makeEmailValidator({
+  inputEl: DOM.inputEmail,
+  fieldEl: DOM.fieldEmail,
+  helpEl: DOM.helpEmail,
+  setHelper: setFieldHelper,
+});
+const validatePassword = makePasswordValidator({
+  inputEl: DOM.inputPw,
+  fieldEl: DOM.fieldPw,
+  helpEl: DOM.helpPw,
+  setHelper: setFieldHelper,
+});
 
 function isAllValidSync(){
   const okEmail = validateEmail({ showMsg:false });
@@ -30,13 +44,13 @@ async function handleSubmit(e){
 
   const originalText = DOM.btn.textContent;
   DOM.btn.disabled = true;
-  DOM.btn.textContent = '로그인 중...';
+  DOM.btn.textContent = MSG.PROCESSING;
 
   try{
     const res = await loginRequest({ email: DOM.inputEmail.value, password: DOM.inputPw.value });
 
     if(!res.ok){
-      setFieldHelper(DOM.fieldPw, DOM.helpPw, '*아이디 또는 비밀번호를 확인해주세요.', 'error');
+      setFieldHelper(DOM.fieldPw, DOM.helpPw, ERR.INVALID_CREDENTIALS, 'error');
       updateSubmitState(DOM.btn, isAllValidSync);
       return;
     }
@@ -56,7 +70,7 @@ async function handleSubmit(e){
     window.location.href = '../board/index.html';
 
   }catch(err){
-    alert('네트워크 오류가 발생했습니다.');
+    alert(ERR.NETWORK);
   }finally{
     DOM.btn.textContent = originalText;
     updateSubmitState(DOM.btn, isAllValidSync);

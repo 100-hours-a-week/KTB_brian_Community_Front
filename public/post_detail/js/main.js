@@ -19,14 +19,16 @@ import {
   fetchPostLikeStatus,
   togglePostLike,
   fetchImageWithAuth,
-} from './api.js';
+} from '../../shared/api/post.js';
 import {
   getQueryParam,
   normalizeCommentsResponse,
   normalizePostResponse,
 } from './utils.js';
 import { initAvatarSync } from '../../shared/avatar-sync.js';
-import { fetchCurrentUser } from '../../mypage/js/api.js';
+import { fetchCurrentUser } from '../../shared/api/user.js';
+import { redirectToLogin } from '../../shared/utils/navigation.js';
+import { MSG, ERR } from '../../shared/constants/messages.js';
 
 const state = {
   postId: null,
@@ -82,11 +84,11 @@ async function loadPost() {
   try {
     const res = await fetchPost(state.postId);
     if (res.status === 404) {
-      alert('존재하지 않는 게시글입니다.');
+      alert(ERR.POST_NOT_FOUND);
       redirectToBoard();
       return;
     }
-    if (!res.ok) throw new Error(`게시글 정보를 불러올 수 없습니다. (${res.status})`);
+    if (!res.ok) throw new Error(`${ERR.POST_FETCH} (${res.status})`);
     const json = await res.json();
     const data = normalizePostResponse(json);
     state.post = data.post ?? data ?? {};
@@ -103,7 +105,7 @@ async function loadPost() {
     }
   } catch (err) {
     console.error(err);
-    alert('게시글 정보를 불러오지 못했습니다.');
+    alert(ERR.POST_FETCH_FAIL);
     redirectToBoard();
   }
 }
@@ -116,13 +118,13 @@ async function hydratePostImage(imageUrl) {
   }
   try {
     const res = await fetchImageWithAuth(imageUrl);
-    if (!res.ok) throw new Error('이미지를 불러오지 못했습니다.');
+    if (!res.ok) throw new Error(ERR.POST_IMAGE_RESPONSE);
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     state.postImageUrl = url;
     setPostImage(url);
   } catch (err) {
-    console.warn('게시글 이미지를 불러오지 못했습니다.', err);
+    console.warn(ERR.POST_IMAGE_RESPONSE, err);
     setPostImage(imageUrl);
   }
 }
@@ -135,13 +137,13 @@ async function hydrateAuthorAvatar(imageUrl) {
   }
   try {
     const res = await fetchImageWithAuth(imageUrl);
-    if (!res.ok) throw new Error('작성자 이미지를 불러오지 못했습니다.');
+    if (!res.ok) throw new Error(ERR.AUTHOR_IMAGE_RESPONSE);
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     state.authorAvatarUrl = url;
     setAuthorAvatar(url);
   } catch (err) {
-    console.warn('작성자 이미지를 불러오지 못했습니다.', err);
+    console.warn(ERR.AUTHOR_IMAGE_RESPONSE, err);
     setAuthorAvatar(imageUrl);
   }
 }
@@ -160,7 +162,7 @@ async function loadComments({ reset = true } = {}) {
       page: state.commentsPage,
       size: 20,
     });
-    if (!res.ok) throw new Error(`댓글 정보를 불러오지 못했습니다. (${res.status})`);
+      if (!res.ok) throw new Error(`${ERR.COMMENT_FETCH} (${res.status})`);
     const json = await res.json();
     const { list, meta } = normalizeCommentsResponse(json);
     if (state.commentsPage === 0) renderComments(list);
@@ -204,7 +206,7 @@ async function hydrateLikeState() {
     state.likeLiked = liked;
     setLikeState(liked);
   } catch (err) {
-    console.warn('좋아요 상태를 불러오지 못했습니다.', err);
+    console.warn(ERR.LIKE_STATUS_FAIL, err);
   }
 }
 
@@ -213,11 +215,8 @@ function bindLikeButton() {
     if (!state.postId) return;
     try {
       const res = await togglePostLike(state.postId);
-      if (res.status === 401) {
-        window.location.href = '../login/index.html';
-        return;
-      }
-      if (!res.ok) throw new Error(`좋아요 처리 실패 (${res.status})`);
+      if (res.status === 401) return redirectToLogin();
+      if (!res.ok) throw new Error(`${ERR.LIKE_PROCESS} (${res.status})`);
       state.likeLiked = !state.likeLiked;
       setLikeState(state.likeLiked);
       if (state.post) {
@@ -231,7 +230,7 @@ function bindLikeButton() {
       }
     } catch (err) {
       console.error(err);
-      alert('좋아요 처리 중 오류가 발생했습니다.');
+      alert(ERR.LIKE_TOGGLE_FAIL);
     }
   });
 }
@@ -255,15 +254,12 @@ async function handleCommentSubmit() {
   if (!state.postId || !DOM.commentInput?.value.trim()) return;
   const content = DOM.commentInput.value.trim();
   DOM.commentSubmit.disabled = true;
-  DOM.commentSubmit.textContent = '등록 중...';
+  DOM.commentSubmit.textContent = MSG.COMMENT_SUBMITTING;
   try {
     const res = await createComment(state.postId, content);
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
-      let message = '댓글 등록에 실패했습니다.';
+      let message = ERR.COMMENT_CREATE_FAIL;
       try {
         const data = await res.json();
         if (data && typeof data.message === 'string') message = data.message;
@@ -275,9 +271,9 @@ async function handleCommentSubmit() {
     await loadComments({ reset: true });
   } catch (err) {
     console.error(err);
-    alert('댓글 등록 중 오류가 발생했습니다.');
+    alert(ERR.COMMENT_CREATE_ERROR);
   } finally {
-    DOM.commentSubmit.textContent = '댓글 등록';
+    DOM.commentSubmit.textContent = MSG.COMMENT_SUBMIT_LABEL;
     DOM.commentSubmit.disabled = true;
   }
 }
@@ -286,26 +282,23 @@ async function handleCommentUpdate(commentId) {
   const content = DOM.commentInput?.value.trim();
   if (!state.postId || !commentId || !content) return;
   DOM.commentSubmit.disabled = true;
-  DOM.commentSubmit.textContent = '수정 중...';
+  DOM.commentSubmit.textContent = MSG.COMMENT_UPDATING;
   try {
     const res = await updateComment(state.postId, commentId, content);
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok) {
-      alert('댓글 수정에 실패했습니다.');
+      alert(ERR.COMMENT_UPDATE_FAIL);
       return;
     }
     DOM.commentInput.value = '';
     state.editingCommentId = null;
-    DOM.commentSubmit.textContent = '댓글 등록';
+    DOM.commentSubmit.textContent = MSG.COMMENT_SUBMIT_LABEL;
     await loadComments({ reset: true });
   } catch (err) {
     console.error(err);
-    alert('댓글 수정 중 오류가 발생했습니다.');
+    alert(ERR.COMMENT_UPDATE_ERROR);
   } finally {
-    DOM.commentSubmit.textContent = '댓글 등록';
+    DOM.commentSubmit.textContent = MSG.COMMENT_SUBMIT_LABEL;
     DOM.commentSubmit.disabled = true;
   }
 }
@@ -335,7 +328,7 @@ function startCommentEdit(commentEl, btn) {
   if (!bodyEl || !DOM.commentInput || !DOM.commentSubmit) return;
   state.editingCommentId = commentEl.dataset.commentId || null;
   DOM.commentInput.value = bodyEl.textContent || '';
-  DOM.commentSubmit.textContent = '댓글 수정';
+  DOM.commentSubmit.textContent = MSG.COMMENT_UPDATE_LABEL;
   DOM.commentSubmit.disabled = false;
   commentEl.classList.add('is-editing');
   DOM.commentInput.focus();
@@ -347,7 +340,7 @@ function cancelCommentEdit(commentEl, btn) {
   state.editingCommentId = null;
   if (DOM.commentInput) DOM.commentInput.value = '';
   if (DOM.commentSubmit) {
-    DOM.commentSubmit.textContent = '댓글 등록';
+    DOM.commentSubmit.textContent = MSG.COMMENT_SUBMIT_LABEL;
     DOM.commentSubmit.disabled = true;
   }
   commentEl.classList.remove('is-editing');
@@ -373,12 +366,9 @@ async function handleCommentDeleteConfirm() {
   const { id, node } = state.commentToDelete;
   try {
     const res = await deleteComment(state.postId, id);
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok && res.status !== 204)
-      throw new Error(`댓글 삭제 실패 (${res.status})`);
+      throw new Error(`${ERR.COMMENT_DELETE} (${res.status})`);
     node?.remove();
     if (state.post) {
       state.post.commentCount = Math.max(
@@ -396,7 +386,7 @@ async function handleCommentDeleteConfirm() {
     setCommentEmptyState(!hasComments);
   } catch (err) {
     console.error(err);
-    alert('댓글 삭제 중 오류가 발생했습니다.');
+    alert(ERR.COMMENT_DELETE_ERROR);
   } finally {
     state.commentToDelete = null;
     closeModal(DOM.commentDeleteModal);
@@ -421,17 +411,14 @@ async function handlePostDeleteConfirm() {
   if (!state.postId) return;
   try {
     const res = await deletePost(state.postId);
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
+    if (res.status === 401) return redirectToLogin();
     if (!res.ok && res.status !== 204)
-      throw new Error(`게시글 삭제 실패 (${res.status})`);
-    alert('게시글이 삭제되었습니다.');
+      throw new Error(`${ERR.POST_DELETE} (${res.status})`);
+    alert(MSG.POST_DELETE_SUCCESS);
     redirectToBoard();
   } catch (err) {
     console.error(err);
-    alert('게시글 삭제 중 오류가 발생했습니다.');
+    alert(ERR.POST_DELETE_ERROR);
   } finally {
     closeModal(DOM.postDeleteModal);
   }
@@ -449,22 +436,19 @@ async function hydrateHeaderAvatar() {
   if (!state.headerAvatarController) return;
   try {
     const res = await fetchCurrentUser();
-    if (res.status === 401) {
-      window.location.href = '../login/index.html';
-      return;
-    }
-    if (!res.ok) throw new Error('사용자 정보를 불러오지 못했습니다.');
+    if (res.status === 401) return redirectToLogin();
+    if (!res.ok) throw new Error(`${ERR.USER_FETCH} (${res.status})`);
     const payload = await res.json();
     const user = payload?.data ?? payload ?? {};
     if (user.imageUrl) {
       try {
         const resImg = await fetchImageWithAuth(user.imageUrl);
-        if (!resImg.ok) throw new Error('아바타 이미지를 불러오지 못했습니다.');
+        if (!resImg.ok) throw new Error(ERR.AVATAR_IMAGE_RESPONSE);
         const blob = await resImg.blob();
         const url = URL.createObjectURL(blob);
         state.headerAvatarController.setAvatar(url, { track: 'external' });
       } catch (imgErr) {
-        console.warn('헤더 아바타 로드 실패', imgErr);
+        console.warn(ERR.AVATAR_LOAD_FAIL, imgErr);
       }
     } else {
       state.headerAvatarController.setAvatar(null);
@@ -493,7 +477,7 @@ async function initPage() {
 
   const postId = getQueryParam('postId');
   if (!postId) {
-    alert('잘못된 접근입니다.');
+    alert(ERR.INVALID_ACCESS);
     redirectToBoard();
     return;
   }

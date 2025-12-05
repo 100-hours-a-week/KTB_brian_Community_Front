@@ -1,6 +1,8 @@
-import { USER_AVAILABILITY_URL } from './config.js';
+import { USER_AVAILABILITY_NICKNAME_URL } from '../../shared/config/config.js';
 
-function makeAvailabilityChecker(paramKey) {
+const DEBOUNCE_DELAY_MS = 300;
+
+function makeAvailabilityChecker({ endpoint, paramKey }) {
   let timer = null;
   let controller = null;
   return (value, cb) => {
@@ -14,7 +16,7 @@ function makeAvailabilityChecker(paramKey) {
     timer = setTimeout(async () => {
       try {
         controller = new AbortController();
-        const url = `${USER_AVAILABILITY_URL}?${paramKey}=` + encodeURIComponent(value);
+        const url = `${endpoint}?${paramKey}=` + encodeURIComponent(value);
         const res = await fetch(url, { signal: controller.signal });
 
         if (res.status === 409) {
@@ -34,8 +36,11 @@ function makeAvailabilityChecker(paramKey) {
         if (e.name === 'AbortError') return;
         cb({ ok: false, duplicate: false, reason: 'network' });
       }
-    }, 300);
+    }, DEBOUNCE_DELAY_MS);
   };
 }
 
-export const checkNickDup = makeAvailabilityChecker('nickname');
+export const checkNickDup = makeAvailabilityChecker({
+  endpoint: USER_AVAILABILITY_NICKNAME_URL,
+  paramKey: 'nickname',
+});

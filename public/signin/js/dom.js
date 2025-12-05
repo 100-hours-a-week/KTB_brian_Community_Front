@@ -6,7 +6,6 @@ export const DOM = {
   // profile
   profileWrap:   document.querySelector('.profile__upload'),
   profileInput:  document.getElementById('profile'),
-  profileImg:    document.querySelector('.profile__preview'),
   profileHelper: document.getElementById('profile-help'),
 
   // email
@@ -28,4 +27,7 @@ export const DOM = {
   fieldNick: document.getElementById('field-nickname'),
   inputNick: document.getElementById('nickname'),
   helpNick:  document.getElementById('nickname-help'),
+
+  // nav
+  backBtn: document.getElementById('signin-back-btn'),
 };
