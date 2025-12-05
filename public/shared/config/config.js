@@ -5,6 +5,8 @@ export const API_BASE = 'http://localhost:8080';
 export const LOGIN_URL = `${API_BASE}/auth/login`;
 export const USER_DOMAIN_URL = `${API_BASE}/users`;
 export const USER_AVAILABILITY_URL = `${USER_DOMAIN_URL}/availability`;
+export const USER_AVAILABILITY_EMAIL_URL = `${USER_AVAILABILITY_URL}/email`;
+export const USER_AVAILABILITY_NICKNAME_URL = `${USER_AVAILABILITY_URL}/nickname`;
 export const USER_ME_URL = `${USER_DOMAIN_URL}/me`;
 export const USER_PASSWORD_URL = `${USER_ME_URL}/password`;
 
