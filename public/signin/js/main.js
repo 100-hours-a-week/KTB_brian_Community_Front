@@ -95,7 +95,6 @@ function initProfilePicker() {
     previewSelector: '.profile__preview',
     wrapperSelector: '.profile__upload',
     fileInputSelector: '#profile',
-    triggerSelector: '.profile__upload',
     hidePreviewWhenEmpty: true,
     resetOnCancel: true,
     previewFallbackSrc: '',
